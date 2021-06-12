@@ -8,5 +8,13 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrganizerAPI.Infrastructure\OrganizerAPI.Infrastructure.csproj" />
+  </ItemGroup>
+
 
 </Project>
