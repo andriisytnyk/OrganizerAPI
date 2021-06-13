@@ -11,12 +11,14 @@ namespace OrganizerAPI.Infrastructure.Interfaces
     {
         Task<T> GetById(int id);
 
-        Task<IReadOnlyList<T>> GetList();
+        Task<List<T>> GetList();
 
-        void Add(T entity);
+        Task<T> Create(T entity);
 
-        void Update(T entity);
+        Task<T> Update(T entity);
 
-        void Delete(T entity);
+        Task Delete(T entity);
+
+        Task DeleteById(int id);
     }
 }

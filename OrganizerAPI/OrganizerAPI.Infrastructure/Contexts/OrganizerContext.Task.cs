@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OrganizerAPI.Models.Common;
+using OrganizerAPI.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace OrganizerAPI.Infrastructure.Contexts
     {
         private const string TaskTableName = "Tasks";
 
-        public DbSet<Models.Models.Task> Tasks { get; set; }
+        public DbSet<UserTask> Tasks { get; set; }
 
-        public void ConfigureTask(EntityTypeBuilder<Models.Models.Task> builder)
+        public void ConfigureTask(EntityTypeBuilder<UserTask> builder)
         {
             builder.ToTable(TaskTableName);
             builder.HasKey(t => t.Id).IsClustered();
