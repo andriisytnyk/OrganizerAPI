@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganizerAPI", "OrganizerAP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganizerAPI.Models", "OrganizerAPI.Models\OrganizerAPI.Models.csproj", "{20403912-C0BE-480F-9008-CA1A9F4D9BEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizerAPI.Infrastructure", "OrganizerAPI.Infrastructure\OrganizerAPI.Infrastructure.csproj", "{6C6A787C-6BBF-4EF8-A1AF-36FE0A926808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganizerAPI.Infrastructure", "OrganizerAPI.Infrastructure\OrganizerAPI.Infrastructure.csproj", "{6C6A787C-6BBF-4EF8-A1AF-36FE0A926808}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizerAPI.Domain", "OrganizerAPI.Domain\OrganizerAPI.Domain.csproj", "{EEB3DC84-4C75-42DA-97D2-37D270CFB555}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{6C6A787C-6BBF-4EF8-A1AF-36FE0A926808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C6A787C-6BBF-4EF8-A1AF-36FE0A926808}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C6A787C-6BBF-4EF8-A1AF-36FE0A926808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEB3DC84-4C75-42DA-97D2-37D270CFB555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEB3DC84-4C75-42DA-97D2-37D270CFB555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEB3DC84-4C75-42DA-97D2-37D270CFB555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEB3DC84-4C75-42DA-97D2-37D270CFB555}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
