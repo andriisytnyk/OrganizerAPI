@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Infrastructure.Repositories
 {
-    public class OrganizerRepository<T> : IRepository<T> where T : Entity
+    public class TaskRepository<T> : IRepository<T> where T : Entity
     {
         protected readonly OrganizerContext organizerContext;
 
-        public OrganizerRepository(OrganizerContext oContext)
+        public TaskRepository(OrganizerContext oContext)
         {
             organizerContext = oContext ?? throw new ArgumentNullException(nameof(oContext));
         }
