@@ -1,20 +1,21 @@
 ﻿using OrganizerAPI.Models.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Interfaces
 {
     public interface IService<T> where T : Entity
     {
-        List<T> GetAll();
+        Task<List<T>> GetAll();
 
-        T GetById(int id);
+        Task<T> GetById(int id);
 
-        int Create(T entity);
+        Task<T> Create(T entity);
 
-        void Update(int id, T entity);
+        Task<T> Update(T entity);
 
-        void Delete(T entity);
+        Task Delete(T entity);
 
-        void DeleteById(int id);
+        Task DeleteById(int id);
     }
 }

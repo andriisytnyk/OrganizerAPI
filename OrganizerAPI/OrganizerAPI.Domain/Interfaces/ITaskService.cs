@@ -1,6 +1,8 @@
-﻿namespace OrganizerAPI.Domain.Interfaces
+﻿using OrganizerAPI.Models.Models;
+
+namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface ITaskService : IService<Models.Models.Task>
+    public interface ITaskService : IService<UserTask>
     {
 
     }

@@ -1,5 +1,6 @@
 ﻿using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Infrastructure.Repositories;
+using OrganizerAPI.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,37 +15,79 @@ namespace OrganizerAPI.Domain.Services
 
         public TaskService(TaskRepository taskRepository)
         {
-
+            repository = taskRepository;
         }
 
-        public int Create(Models.Models.Task entity)
+        public async Task<UserTask> Create(UserTask entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await repository.Create(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public void Delete(Models.Models.Task entity)
+        public async Task Delete(UserTask entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await repository.Delete(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public void DeleteById(int id)
+        public async Task DeleteById(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await repository.DeleteById(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public List<Models.Models.Task> GetAll()
+        public async Task<List<UserTask>> GetAll()
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await repository.GetList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public Models.Models.Task GetById(int id)
+        public async Task<UserTask> GetById(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await repository.GetById(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public void Update(int id, Models.Models.Task entity)
+        public async Task<UserTask> Update(UserTask entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await repository.Update(entity);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
