@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Models.Models
 {
-    public class Task : Entity
+    public class UserTask : Entity
     {
         public string Title { get; set; }
         public string Description { get; set; }

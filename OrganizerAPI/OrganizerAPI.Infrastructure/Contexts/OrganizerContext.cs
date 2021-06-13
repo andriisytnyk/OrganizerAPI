@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrganizerAPI.Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace OrganizerAPI.Infrastructure.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Models.Models.Task>(ConfigureTask);
+            modelBuilder.Entity<UserTask>(ConfigureTask);
         }
     }
 }

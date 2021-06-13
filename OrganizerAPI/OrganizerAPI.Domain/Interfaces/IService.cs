@@ -1,17 +1,14 @@
 ﻿using OrganizerAPI.Models.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace OrganizerAPI.Infrastructure.Interfaces
+namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface IRepository<T> where T : Entity
+    public interface IService<T> where T : Entity
     {
-        Task<T> GetById(int id);
+        Task<List<T>> GetAll();
 
-        Task<List<T>> GetList();
+        Task<T> GetById(int id);
 
         Task<T> Create(T entity);
 
