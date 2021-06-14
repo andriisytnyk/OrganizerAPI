@@ -11,7 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OrganizerAPI.Domain.Interfaces;
+using OrganizerAPI.Domain.Services;
 using OrganizerAPI.Infrastructure.Contexts;
+using OrganizerAPI.Infrastructure.Repositories;
 
 namespace OrganizerAPI
 {
@@ -27,10 +30,16 @@ namespace OrganizerAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => 
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
 
             services.AddDbContext<OrganizerContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("Organizer")));
+
+            services.AddScoped<IUserTaskService, UserTaskService>();
+
+            services.AddScoped<UserTaskRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
