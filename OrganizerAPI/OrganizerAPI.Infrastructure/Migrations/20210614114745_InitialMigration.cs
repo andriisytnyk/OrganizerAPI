@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OrganizerAPI.Infrastructure.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "UserTasks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -20,7 +20,7 @@ namespace OrganizerAPI.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.Id)
+                    table.PrimaryKey("PK_UserTasks", x => x.Id)
                         .Annotation("SqlServer:Clustered", true);
                 });
         }
@@ -28,7 +28,7 @@ namespace OrganizerAPI.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "UserTasks");
         }
     }
 }

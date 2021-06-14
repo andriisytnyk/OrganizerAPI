@@ -10,8 +10,8 @@ using OrganizerAPI.Infrastructure.Contexts;
 namespace OrganizerAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(OrganizerContext))]
-    [Migration("20210613103622_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210614114745_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace OrganizerAPI.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("OrganizerAPI.Models.Models.Task", b =>
+            modelBuilder.Entity("OrganizerAPI.Models.Models.UserTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -50,7 +50,7 @@ namespace OrganizerAPI.Infrastructure.Migrations
                     b.HasKey("Id")
                         .IsClustered();
 
-                    b.ToTable("Tasks");
+                    b.ToTable("UserTasks");
                 });
 #pragma warning restore 612, 618
         }
