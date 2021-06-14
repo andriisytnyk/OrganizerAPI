@@ -1,6 +1,8 @@
-﻿using OrganizerAPI.Domain.Interfaces;
+﻿using FluentValidation;
+using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Infrastructure.Repositories;
 using OrganizerAPI.Models.Models;
+using OrganizerAPI.Shared.ModelsDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +14,36 @@ namespace OrganizerAPI.Domain.Services
     public class UserTaskService : IUserTaskService
     {
         private readonly UserTaskRepository repository;
+        private readonly IMapper mapper;
+        private readonly AbstractValidator<UserTaskDTO> validator;
 
-        public UserTaskService(UserTaskRepository taskRepository)
+        public UserTaskService(
+            UserTaskRepository taskRepository,
+            IMapper mapper,
+            AbstractValidator<UserTaskDTO> userTaskValidator
+            )
         {
-            repository = taskRepository;
+            this.repository = taskRepository;
+            this.mapper = mapper;
+            this.validator = userTaskValidator;
         }
 
-        public async Task<UserTask> Create(UserTask entity)
+        public async Task<UserTaskDTO> Create(UserTaskDTO entity)
         {
             try
             {
-                return await repository.Create(entity);
+                var validationResult = validator.Validate(entity);
+                if (validationResult.IsValid)
+                {
+                    var result = mapper.MapUserTask(
+                    await repository.Create(
+                        mapper.MapUserTask(entity)
+                        )
+                    );
+                    return result;
+                }
+                else
+                    throw new ValidationException(validationResult.Errors);
             }
             catch (Exception)
             {
@@ -30,11 +51,11 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task Delete(UserTask entity)
+        public async Task Delete(UserTaskDTO entity)
         {
             try
             {
-                await repository.Delete(entity);
+                await repository.Delete(mapper.MapUserTask(entity));
             }
             catch (Exception)
             {
@@ -54,11 +75,16 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<List<UserTask>> GetAll()
+        public async Task<List<UserTaskDTO>> GetAll()
         {
             try
             {
-                return await repository.GetList();
+                var result = new List<UserTaskDTO>();
+                foreach (var item in await repository.GetList())
+                {
+                    result.Add(mapper.MapUserTask(item));
+                }
+                return result;
             }
             catch (Exception)
             {
@@ -66,11 +92,11 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserTask> GetById(int id)
+        public async Task<UserTaskDTO> GetById(int id)
         {
             try
             {
-                return await repository.GetById(id);
+                return mapper.MapUserTask(await repository.GetById(id));
             }
             catch (Exception)
             {
@@ -78,11 +104,18 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserTask> Update(UserTask entity)
+        public async Task<UserTaskDTO> Update(UserTaskDTO entity)
         {
+            var validationResult = validator.Validate(entity);
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
             try
             {
-                return await repository.Update(entity);
+                return mapper.MapUserTask(
+                    await repository.Update(
+                        mapper.MapUserTask(entity)
+                        )
+                    );
             }
             catch (Exception)
             {
