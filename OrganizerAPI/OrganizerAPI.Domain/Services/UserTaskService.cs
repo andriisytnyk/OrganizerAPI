@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Services
 {
-    public class TaskService : ITaskService
+    public class UserTaskService : IUserTaskService
     {
-        private readonly TaskRepository repository;
+        private readonly UserTaskRepository repository;
 
-        public TaskService(TaskRepository taskRepository)
+        public UserTaskService(UserTaskRepository taskRepository)
         {
             repository = taskRepository;
         }
