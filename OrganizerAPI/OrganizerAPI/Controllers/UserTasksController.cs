@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganizerAPI.Domain.Interfaces;
-using OrganizerAPI.Models.Models;
+using OrganizerAPI.Shared.ModelsDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +51,7 @@ namespace OrganizerAPI.Controllers
 
         // POST: user-tasks
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] UserTask userTask)
+        public async Task<IActionResult> Post([FromBody] UserTaskDTO userTask)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace OrganizerAPI.Controllers
 
         // PUT: user-tasks
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] UserTask userTask)
+        public async Task<IActionResult> Put([FromBody] UserTaskDTO userTask)
         {
             try
             {
@@ -80,12 +80,12 @@ namespace OrganizerAPI.Controllers
 
         // DELETE: user-tasks
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] UserTask userTask)
+        public async Task<IActionResult> Delete([FromBody] UserTaskDTO userTask)
         {
             try
             {
                 await service.Delete(userTask);
-                return NoContent();
+                return Ok();
             }
             catch (Exception)
             {
@@ -101,7 +101,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 await service.DeleteById(id);
-                return NoContent();
+                return Ok();
             }
             catch (Exception)
             {

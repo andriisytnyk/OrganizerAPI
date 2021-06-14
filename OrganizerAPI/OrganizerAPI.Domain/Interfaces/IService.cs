@@ -1,10 +1,9 @@
-﻿using OrganizerAPI.Models.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface IService<T> where T : Entity
+    public interface IService<T> where T : class
     {
         Task<List<T>> GetAll();
 

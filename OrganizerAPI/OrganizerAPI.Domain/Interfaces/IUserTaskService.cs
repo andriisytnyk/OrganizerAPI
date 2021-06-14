@@ -1,8 +1,8 @@
-﻿using OrganizerAPI.Models.Models;
+﻿using OrganizerAPI.Shared.ModelsDTO;
 
 namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface IUserTaskService : IService<UserTask>
+    public interface IUserTaskService : IService<UserTaskDTO>
     {
 
     }
