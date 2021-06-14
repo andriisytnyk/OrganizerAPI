@@ -12,13 +12,13 @@ namespace OrganizerAPI.Infrastructure.Contexts
 {
     public partial class OrganizerContext
     {
-        private const string TaskTableName = "Tasks";
+        private const string UserTasksTableName = "UserTasks";
 
-        public DbSet<UserTask> Tasks { get; set; }
+        public DbSet<UserTask> UserTasks { get; set; }
 
         public void ConfigureTask(EntityTypeBuilder<UserTask> builder)
         {
-            builder.ToTable(TaskTableName);
+            builder.ToTable(UserTasksTableName);
             builder.HasKey(t => t.Id).IsClustered();
             builder.Property(t => t.Title).HasMaxLength(50).HasDefaultValue("New task").IsRequired();
             builder.Property(t => t.Description).HasMaxLength(200);

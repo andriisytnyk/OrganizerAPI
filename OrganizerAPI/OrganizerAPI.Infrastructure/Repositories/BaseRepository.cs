@@ -53,7 +53,7 @@ namespace OrganizerAPI.Infrastructure.Repositories
         }
 
         public async Task<List<T>> GetList()
-        {
+        {  
             return await organizerContext.Set<T>().ToListAsync();
         }
 

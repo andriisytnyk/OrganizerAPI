@@ -19,7 +19,7 @@ namespace OrganizerAPI.Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("OrganizerAPI.Models.Models.Task", b =>
+            modelBuilder.Entity("OrganizerAPI.Models.Models.UserTask", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +48,7 @@ namespace OrganizerAPI.Infrastructure.Migrations
                     b.HasKey("Id")
                         .IsClustered();
 
-                    b.ToTable("Tasks");
+                    b.ToTable("UserTasks");
                 });
 #pragma warning restore 612, 618
         }

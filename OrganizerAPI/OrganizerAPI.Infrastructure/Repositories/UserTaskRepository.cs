@@ -3,9 +3,9 @@ using OrganizerAPI.Models.Models;
 
 namespace OrganizerAPI.Infrastructure.Repositories
 {
-    public class TaskRepository : BaseRepository<UserTask>
+    public class UserTaskRepository : BaseRepository<UserTask>
     {
-        public TaskRepository(OrganizerContext oContext) : base(oContext)
+        public UserTaskRepository(OrganizerContext oContext) : base(oContext)
         {
 
         }

@@ -2,7 +2,7 @@
 
 namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface ITaskService : IService<UserTask>
+    public interface IUserTaskService : IService<UserTask>
     {
 
     }
