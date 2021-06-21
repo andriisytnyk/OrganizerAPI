@@ -16,7 +16,7 @@ namespace OrganizerAPI.Infrastructure.Contexts
 
         public DbSet<User> Users { get; set; }
 
-        public void ConfigureTask(EntityTypeBuilder<User> builder)
+        public void ConfigureUser(EntityTypeBuilder<User> builder)
         {
             builder.ToTable(UsersTableName);
             builder.HasKey(u => u.Id).IsClustered();
@@ -24,9 +24,13 @@ namespace OrganizerAPI.Infrastructure.Contexts
             builder.Property(u => u.LastName).HasMaxLength(50);
             builder.Property(u => u.Username).HasMaxLength(20).IsRequired();
             builder.Property(u => u.Password).HasMaxLength(30).IsRequired();
-            builder.HasOne(u => u.UserRefreshToken)
+            builder.HasMany(u => u.UserRefreshTokens)
                 .WithOne()
-                .HasForeignKey("User")
+                .HasForeignKey("UserId")
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(u => u.UserTasks)
+                .WithOne()
+                .HasForeignKey("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

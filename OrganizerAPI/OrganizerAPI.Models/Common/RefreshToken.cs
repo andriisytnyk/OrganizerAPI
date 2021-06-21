@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Models.Common
 {
-    [Owned]
     public class RefreshToken
     {
         [Key]

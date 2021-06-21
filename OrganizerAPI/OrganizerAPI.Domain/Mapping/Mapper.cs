@@ -19,7 +19,8 @@ namespace OrganizerAPI.Domain.Mapping
                 Title = value.Title,
                 Description = value.Description,
                 Date = value.Date,
-                Status = value.Status
+                Status = value.Status,
+                UserId = value.UserId
             };
         }
 
@@ -31,8 +32,26 @@ namespace OrganizerAPI.Domain.Mapping
                 Title = value.Title,
                 Description = value.Description,
                 Date = value.Date,
-                Status = value.Status
+                Status = value.Status,
+                UserId = value.UserId
             };
+        }
+
+        public UserDTO MapUser(User value)
+        {
+            return new UserDTO
+            {
+                Id = value.Id,
+                FirstName = value.FirstName,
+                LastName = value.LastName,
+                Username = value.Username
+            };
+        }
+
+        // ???
+        public User MapUser(UserDTO value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

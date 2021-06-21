@@ -12,5 +12,8 @@ namespace OrganizerAPI.Domain.Interfaces
     {
         UserTaskDTO MapUserTask(UserTask value);
         UserTask MapUserTask(UserTaskDTO value);
+
+        UserDTO MapUser(User value);
+        User MapUser(UserDTO value);
     }
 }

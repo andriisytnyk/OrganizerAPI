@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Infrastructure.Repositories
 {
-    public class BaseRepository<T> : IRepository<T> where T : Entity
+    public abstract class BaseRepository<T> : IRepository<T> where T : Entity
     {
         protected readonly OrganizerContext organizerContext;
 

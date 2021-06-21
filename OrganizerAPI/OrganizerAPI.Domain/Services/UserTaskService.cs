@@ -28,18 +28,17 @@ namespace OrganizerAPI.Domain.Services
             this.validator = userTaskValidator;
         }
 
-        public async Task<UserTaskDTO> Create(UserTaskDTO entity)
+        public async Task<UserTaskDTO> Create(UserTaskDTO entity, int? userId = null)
         {
             try
             {
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+                entity.UserId = userId.Value;
                 var validationResult = validator.Validate(entity);
                 if (validationResult.IsValid)
                 {
-                    var result = mapper.MapUserTask(
-                    await repository.Create(
-                        mapper.MapUserTask(entity)
-                        )
-                    );
+                    var result = mapper.MapUserTask(await repository.Create(mapper.MapUserTask(entity)));
                     return result;
                 }
                 else
@@ -51,7 +50,7 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task Delete(UserTaskDTO entity)
+        public async Task Delete(UserTaskDTO entity, int? userId = null)
         {
             try
             {
@@ -63,7 +62,7 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task DeleteById(int id)
+        public async Task DeleteById(int id, int? userId = null)
         {
             try
             {
@@ -75,12 +74,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<List<UserTaskDTO>> GetAll()
+        public async Task<List<UserTaskDTO>> GetAll(int? userId = null)
         {
             try
             {
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
                 var result = new List<UserTaskDTO>();
-                foreach (var item in await repository.GetList())
+                foreach (var item in (await repository.GetList()).Where(ut => ut.UserId == userId).Select(ut => ut))
                 {
                     result.Add(mapper.MapUserTask(item));
                 }
@@ -92,7 +93,7 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserTaskDTO> GetById(int id)
+        public async Task<UserTaskDTO> GetById(int id, int? userId = null)
         {
             try
             {
@@ -104,7 +105,7 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserTaskDTO> Update(UserTaskDTO entity)
+        public async Task<UserTaskDTO> Update(UserTaskDTO entity, int? userId = null)
         {
             var validationResult = validator.Validate(entity);
             if (!validationResult.IsValid)

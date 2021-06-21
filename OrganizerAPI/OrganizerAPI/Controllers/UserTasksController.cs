@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Shared.ModelsDTO;
@@ -9,15 +10,18 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Controllers
 {
-    [Route("user-tasks")]
+    [Authorize]
     [ApiController]
+    [Route("user-tasks")]
     public class UserTasksController : ControllerBase
     {
-        readonly IUserTaskService service;
+        private readonly IUserTaskService userTaskService;
+        private readonly IUserService userService;
 
-        public UserTasksController(IUserTaskService userTaskService)
+        public UserTasksController(IUserTaskService userTaskService, IUserService userService)
         {
-            service = userTaskService;
+            this.userTaskService = userTaskService;
+            this.userService = userService;
         }
 
         // GET: user-tasks
@@ -26,7 +30,8 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                return Ok(await service.GetAll());
+                string authToken = Request.Cookies["refreshToken"];
+                return Ok(await userTaskService.GetAll(userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -41,7 +46,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                return Ok(await service.GetById(id));
+                return Ok(await userTaskService.GetById(id));
             }
             catch (Exception)
             {
@@ -55,7 +60,8 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                return Ok(await service.Create(userTask));
+                string authToken = Request.Cookies["refreshToken"];
+                return Ok(await userTaskService.Create(userTask, userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -69,7 +75,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                await service.Update(userTask);
+                await userTaskService.Update(userTask);
                 return Ok();
             }
             catch (Exception)
@@ -84,7 +90,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                await service.Delete(userTask);
+                await userTaskService.Delete(userTask);
                 return Ok();
             }
             catch (Exception)
@@ -100,7 +106,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                await service.DeleteById(id);
+                await userTaskService.DeleteById(id);
                 return Ok();
             }
             catch (Exception)

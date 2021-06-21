@@ -16,7 +16,7 @@ namespace OrganizerAPI.Infrastructure.Contexts
 
         public DbSet<UserTask> UserTasks { get; set; }
 
-        public void ConfigureTask(EntityTypeBuilder<UserTask> builder)
+        public void ConfigureUserTask(EntityTypeBuilder<UserTask> builder)
         {
             builder.ToTable(UserTasksTableName);
             builder.HasKey(t => t.Id).IsClustered();

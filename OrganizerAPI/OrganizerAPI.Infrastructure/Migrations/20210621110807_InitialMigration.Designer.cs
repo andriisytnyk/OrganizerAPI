@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganizerAPI.Infrastructure.Contexts;
 
 namespace OrganizerAPI.Infrastructure.Migrations
 {
     [DbContext(typeof(OrganizerContext))]
-    partial class OrganizerContextModelSnapshot : ModelSnapshot
+    [Migration("20210621110807_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,12 +49,12 @@ namespace OrganizerAPI.Infrastructure.Migrations
                     b.Property<string>("Token")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int?>("User")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User");
 
                     b.ToTable("RefreshToken");
                 });
@@ -114,13 +116,8 @@ namespace OrganizerAPI.Infrastructure.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasDefaultValue("New task");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id")
                         .IsClustered();
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserTasks");
                 });
@@ -129,24 +126,13 @@ namespace OrganizerAPI.Infrastructure.Migrations
                 {
                     b.HasOne("OrganizerAPI.Models.Models.User", null)
                         .WithMany("UserRefreshTokens")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("User")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("OrganizerAPI.Models.Models.UserTask", b =>
-                {
-                    b.HasOne("OrganizerAPI.Models.Models.User", null)
-                        .WithMany("UserTasks")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("OrganizerAPI.Models.Models.User", b =>
                 {
                     b.Navigation("UserRefreshTokens");
-
-                    b.Navigation("UserTasks");
                 });
 #pragma warning restore 612, 618
         }

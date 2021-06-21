@@ -24,7 +24,8 @@ namespace OrganizerAPI.Infrastructure.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserTask>(ConfigureTask);
+            modelBuilder.Entity<UserTask>(ConfigureUserTask);
+            modelBuilder.Entity<User>(ConfigureUser);
         }
     }
 }

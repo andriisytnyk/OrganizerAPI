@@ -13,10 +13,11 @@ namespace OrganizerAPI.Domain.Validators
     {
         public UserTaskValidator()
         {
-            RuleFor(g => g.Title).NotEmpty().Length(1, 50);
-            RuleFor(g => g.Description).Length(1, 200);
-            RuleFor(g => g.Status).IsInEnum();
-            RuleFor(g => g.Date).NotNull();
+            RuleFor(ut => ut.Title).NotEmpty().Length(1, 50);
+            RuleFor(ut => ut.Description).Length(1, 200);
+            RuleFor(ut => ut.Status).IsInEnum();
+            RuleFor(ut => ut.Date).NotNull();
+            RuleFor(ut => ut.UserId).NotEmpty();
         }
     }
 }
