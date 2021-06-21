@@ -16,8 +16,4 @@
     <ProjectReference Include="..\OrganizerAPI.Models\OrganizerAPI.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>
