@@ -20,6 +20,11 @@ namespace OrganizerAPI.Domain.Services
 {
     public class UserService : IUserService
     {
+        /// <summary>
+        /// JWT token expiration time in seconds.
+        /// </summary>
+        private const int JWT_TOKEN_EXPIRES_IN = 1800;
+
         private OrganizerContext context;
         private readonly JWTSettings jwtSettings;
         private readonly IMapper mapper;
@@ -52,7 +57,7 @@ namespace OrganizerAPI.Domain.Services
             context.Update(user);
             context.SaveChanges();
 
-            return new UserAuthResponseDTO(mapper.MapUser(user), jwtToken, refreshToken.Token);
+            return new UserAuthResponseDTO(mapper.MapUser(user), jwtToken, JWT_TOKEN_EXPIRES_IN, refreshToken.Token);
         }
 
         public UserAuthResponseDTO UpdateRefreshToken(string token, string ipAddress)
@@ -81,7 +86,7 @@ namespace OrganizerAPI.Domain.Services
             // generate new jwt
             var jwtToken = generateJwtToken(user);
 
-            return new UserAuthResponseDTO(mapper.MapUser(user), jwtToken, newRefreshToken.Token);
+            return new UserAuthResponseDTO(mapper.MapUser(user), jwtToken, JWT_TOKEN_EXPIRES_IN, newRefreshToken.Token);
         }
 
         public bool RevokeToken(string token, string ipAddress)
@@ -134,7 +139,7 @@ namespace OrganizerAPI.Domain.Services
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(15),
+                Expires = DateTime.UtcNow.AddMinutes(JWT_TOKEN_EXPIRES_IN),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

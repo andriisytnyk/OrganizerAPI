@@ -17,7 +17,6 @@ namespace OrganizerAPI.Domain.Validators
             RuleFor(ut => ut.Description).Length(1, 200);
             RuleFor(ut => ut.Status).IsInEnum();
             RuleFor(ut => ut.Date).NotNull();
-            RuleFor(ut => ut.UserId).NotEmpty();
         }
     }
 }

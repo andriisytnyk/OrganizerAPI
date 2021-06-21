@@ -34,11 +34,12 @@ namespace OrganizerAPI.Domain.Services
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                entity.UserId = userId.Value;
                 var validationResult = validator.Validate(entity);
                 if (validationResult.IsValid)
                 {
-                    var result = mapper.MapUserTask(await repository.Create(mapper.MapUserTask(entity)));
+                    var userTask = mapper.MapUserTask(entity);
+                    userTask.UserId = userId.Value;
+                    var result = mapper.MapUserTask(await repository.Create(userTask));
                     return result;
                 }
                 else
@@ -54,7 +55,12 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                await repository.Delete(mapper.MapUserTask(entity));
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+                var userTask = mapper.MapUserTask(entity);
+                if (userTask.UserId != userId)
+                    throw new Exception("User isn't this task owner.");
+                await repository.Delete(userTask);
             }
             catch (Exception)
             {
@@ -66,6 +72,11 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+                var userTask = await repository.GetById(id);
+                if (userTask.UserId != userId)
+                    throw new Exception("User isn't this task owner.");
                 await repository.DeleteById(id);
             }
             catch (Exception)
@@ -81,7 +92,7 @@ namespace OrganizerAPI.Domain.Services
                 if (userId == null)
                     throw new Exception("UserId was not included.");
                 var result = new List<UserTaskDTO>();
-                foreach (var item in (await repository.GetList()).Where(ut => ut.UserId == userId).Select(ut => ut))
+                foreach (var item in (await repository.GetList()).Where(ut => ut.UserId == userId))
                 {
                     result.Add(mapper.MapUserTask(item));
                 }
@@ -97,7 +108,12 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                return mapper.MapUserTask(await repository.GetById(id));
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+                var userTask = await repository.GetById(id);
+                if (userTask.UserId != userId)
+                    throw new Exception("User isn't this task owner.");
+                return mapper.MapUserTask(userTask);
             }
             catch (Exception)
             {
@@ -107,18 +123,24 @@ namespace OrganizerAPI.Domain.Services
 
         public async Task<UserTaskDTO> Update(UserTaskDTO entity, int? userId = null)
         {
+            if (userId == null)
+                throw new Exception("UserId was not included.");
             var validationResult = validator.Validate(entity);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
             try
             {
-                return mapper.MapUserTask(
-                    await repository.Update(
-                        mapper.MapUserTask(entity)
-                        )
-                    );
+                var userTask = await repository.GetById(entity.Id);
+                if (userTask.UserId != userId)
+                    throw new Exception("User isn't this task owner.");
+                //var result = mapper.MapUserTask(entity);
+                userTask.Title = entity.Title;
+                userTask.Description = entity.Description;
+                userTask.Status = entity.Status;
+                //result.UserId = userId.Value;
+                return mapper.MapUserTask(await repository.Update(userTask));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

@@ -14,17 +14,22 @@ namespace OrganizerAPI.Shared.ModelsDTO
         public string LastName { get; set; }
         public string Username { get; set; }
         public string JwtToken { get; set; }
+        /// <summary>
+        /// Gets or sets token expiration time in seconds.
+        /// </summary>
+        public int ExpiresIn { get; set; }
 
         [JsonIgnore] // refresh token is returned in http only cookie
         public string RefreshToken { get; set; }
 
-        public UserAuthResponseDTO(UserDTO userDTO, string jwtToken, string refreshToken)
+        public UserAuthResponseDTO(UserDTO userDTO, string jwtToken, int expiresIn, string refreshToken)
         {
             Id = userDTO.Id;
             FirstName = userDTO.FirstName;
             LastName = userDTO.LastName;
             Username = userDTO.Username;
             JwtToken = jwtToken;
+            ExpiresIn = expiresIn;
             RefreshToken = refreshToken;
         }
     }

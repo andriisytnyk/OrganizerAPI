@@ -19,8 +19,7 @@ namespace OrganizerAPI.Domain.Mapping
                 Title = value.Title,
                 Description = value.Description,
                 Date = value.Date,
-                Status = value.Status,
-                UserId = value.UserId
+                Status = value.Status
             };
         }
 
@@ -32,8 +31,7 @@ namespace OrganizerAPI.Domain.Mapping
                 Title = value.Title,
                 Description = value.Description,
                 Date = value.Date,
-                Status = value.Status,
-                UserId = value.UserId
+                Status = value.Status
             };
         }
 

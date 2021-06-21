@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Shared.ModelsDTO;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,7 +48,8 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                return Ok(await userTaskService.GetById(id));
+                string authToken = Request.Cookies["refreshToken"];
+                return Ok(await userTaskService.GetById(id, userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -61,7 +64,12 @@ namespace OrganizerAPI.Controllers
             try
             {
                 string authToken = Request.Cookies["refreshToken"];
-                return Ok(await userTaskService.Create(userTask, userService.GetCurrentUserId(authToken)));
+                return Created(
+                    Request.GetDisplayUrl(), 
+                    await userTaskService.Create(
+                        userTask, 
+                        userService.GetCurrentUserId(authToken))
+                    );
             }
             catch (Exception)
             {
@@ -75,7 +83,10 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                await userTaskService.Update(userTask);
+                string authToken = Request.Cookies["refreshToken"];
+                await userTaskService.Update(
+                    userTask, 
+                    userService.GetCurrentUserId(authToken));
                 return Ok();
             }
             catch (Exception)
@@ -91,7 +102,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 await userTaskService.Delete(userTask);
-                return Ok();
+                return NoContent();
             }
             catch (Exception)
             {
@@ -107,7 +118,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 await userTaskService.DeleteById(id);
-                return Ok();
+                return NoContent();
             }
             catch (Exception)
             {
