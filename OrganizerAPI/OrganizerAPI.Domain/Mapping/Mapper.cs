@@ -42,14 +42,23 @@ namespace OrganizerAPI.Domain.Mapping
                 Id = value.Id,
                 FirstName = value.FirstName,
                 LastName = value.LastName,
-                Username = value.Username
+                Username = value.Username,
+                Email = value.Email,
+                UserRefreshTokens = value.UserRefreshTokens
             };
         }
 
-        // ???
         public User MapUser(UserDTO value)
         {
-            throw new NotImplementedException();
+            return new User
+            {
+                Id = value.Id,
+                FirstName = value.FirstName,
+                LastName = value.LastName,
+                Username = value.Username,
+                Email = value.Email,
+                UserRefreshTokens = value.UserRefreshTokens
+            };
         }
     }
 }

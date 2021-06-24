@@ -22,20 +22,30 @@ namespace OrganizerAPI.Controllers
             this.userService = userService;
         }
 
+        // POST: users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserAuthRequestDTO request)
         {
-            var response = userService.Authenticate(request, ipAddress());
+            try
+            {
+                var response = userService.Authenticate(request, ipAddress());
 
-            if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                if (response == null)
+                    return BadRequest(new { message = "Username or password is incorrect" });
 
-            setTokenCookie(response.RefreshToken);
+                setTokenCookie(response.RefreshToken);
 
-            return Ok(response);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
+        // POST: users/refresh-token
         [AllowAnonymous]
         [HttpPost("refresh-token")]
         public IActionResult RefreshToken()
@@ -51,6 +61,7 @@ namespace OrganizerAPI.Controllers
             return Ok(response);
         }
 
+        // POST: users/revoke-token
         [HttpPost("revoke-token")]
         public IActionResult RevokeToken([FromBody] UserAuthRevokeTokenRequest request)
         {
@@ -68,31 +79,16 @@ namespace OrganizerAPI.Controllers
             return Ok(new { message = "Token revoked" });
         }
 
-        [HttpGet]
-        public IActionResult GetAll()
+        // GET: users/current
+        [HttpGet("current")]
+        public IActionResult GetCurrentUser()
         {
-            var users = userService.GetAll();
-            return Ok(users);
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = userService.GetById(id);
+            var refreshToken = Request.Cookies["refreshToken"];
+            var user = userService.GetCurrentUser(refreshToken);
             if (user == null) 
                 return NotFound();
 
             return Ok(user);
-        }
-
-        [HttpGet("{id}/refresh-tokens")]
-        public IActionResult GetRefreshTokens(int id)
-        {
-            var user = userService.GetById(id);
-            if (user == null) 
-                return NotFound();
-
-            return Ok(user.UserRefreshTokens);
         }
 
         // helper methods

@@ -101,7 +101,8 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                await userTaskService.Delete(userTask);
+                string authToken = Request.Cookies["refreshToken"];
+                await userTaskService.Delete(userTask, userService.GetCurrentUserId(authToken));
                 return NoContent();
             }
             catch (Exception)
@@ -117,7 +118,8 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                await userTaskService.DeleteById(id);
+                string authToken = Request.Cookies["refreshToken"];
+                await userTaskService.DeleteById(id, userService.GetCurrentUserId(authToken));
                 return NoContent();
             }
             catch (Exception)

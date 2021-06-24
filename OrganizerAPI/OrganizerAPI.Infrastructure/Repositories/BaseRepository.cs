@@ -12,7 +12,8 @@ namespace OrganizerAPI.Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T> where T : Entity
     {
-        protected readonly OrganizerContext organizerContext;
+        public readonly OrganizerContext organizerContext;
+        //protected readonly OrganizerContext organizerContext;
 
         public BaseRepository(OrganizerContext oContext)
         {
@@ -49,12 +50,12 @@ namespace OrganizerAPI.Infrastructure.Repositories
 
         public async Task<T> GetById(int id)
         {
-            return await organizerContext.Set<T>().FindAsync(id);
+            return await organizerContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task<List<T>> GetList()
         {  
-            return await organizerContext.Set<T>().ToListAsync();
+            return await organizerContext.Set<T>().AsNoTracking().ToListAsync();
         }
 
         public async Task<T> Update(T entity)

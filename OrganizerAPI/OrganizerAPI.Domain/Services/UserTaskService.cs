@@ -57,7 +57,7 @@ namespace OrganizerAPI.Domain.Services
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                var userTask = mapper.MapUserTask(entity);
+                var userTask = await repository.GetById(entity.Id);
                 if (userTask.UserId != userId)
                     throw new Exception("User isn't this task owner.");
                 await repository.Delete(userTask);
@@ -133,14 +133,11 @@ namespace OrganizerAPI.Domain.Services
                 var userTask = await repository.GetById(entity.Id);
                 if (userTask.UserId != userId)
                     throw new Exception("User isn't this task owner.");
-                //var result = mapper.MapUserTask(entity);
-                userTask.Title = entity.Title;
-                userTask.Description = entity.Description;
-                userTask.Status = entity.Status;
-                //result.UserId = userId.Value;
-                return mapper.MapUserTask(await repository.Update(userTask));
+                var result = mapper.MapUserTask(entity);
+                result.UserId = userId.Value;
+                return mapper.MapUserTask(await repository.Update(result));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

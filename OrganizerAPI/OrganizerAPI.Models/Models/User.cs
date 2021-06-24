@@ -16,6 +16,7 @@ namespace OrganizerAPI.Models.Models
 
         [JsonIgnore]
         public string Password { get; set; }
+        public string Email { get; set; }
 
         [JsonIgnore]
         public List<RefreshToken> UserRefreshTokens { get; set; }

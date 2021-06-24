@@ -13,8 +13,7 @@ namespace OrganizerAPI.Domain.Interfaces
         UserAuthResponseDTO Authenticate(UserAuthRequestDTO model, string ipAddress);
         UserAuthResponseDTO UpdateRefreshToken(string token, string ipAddress);
         bool RevokeToken(string token, string ipAddress);
-        IEnumerable<User> GetAll();
-        User GetById(int id);
-        public int? GetCurrentUserId(string token);
+        UserDTO GetCurrentUser(string token);
+        int? GetCurrentUserId(string token);
     }
 }

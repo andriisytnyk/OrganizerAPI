@@ -28,7 +28,7 @@ namespace OrganizerAPI.Domain.Services
         private OrganizerContext context;
         private readonly JWTSettings jwtSettings;
         private readonly IMapper mapper;
-        private readonly AbstractValidator<UserDTO> validator;
+        // private readonly AbstractValidator<UserDTO> validator;
 
         public UserService(
             OrganizerContext context,
@@ -51,6 +51,16 @@ namespace OrganizerAPI.Domain.Services
             // authentication successful so generate jwt and refresh tokens
             var jwtToken = generateJwtToken(user);
             var refreshToken = generateRefreshToken(ipAddress);
+
+            // revoke last used refresh token
+            var refreshTokens = user.UserRefreshTokens;
+            if (refreshTokens != null && refreshTokens.Count != 0)
+            {
+                var oldJwtToken = refreshTokens.Last();
+                oldJwtToken.Revoked = DateTime.UtcNow;
+                oldJwtToken.RevokedByIp = ipAddress;
+                oldJwtToken.ReplacedByToken = refreshToken.Token;
+            }
 
             // save refresh token
             user.UserRefreshTokens.Add(refreshToken);
@@ -112,14 +122,11 @@ namespace OrganizerAPI.Domain.Services
             return true;
         }
 
-        public IEnumerable<User> GetAll()
+        public UserDTO GetCurrentUser(string token)
         {
-            return context.Users.Include(u => u.UserRefreshTokens);
-        }
+            var user = context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
 
-        public User GetById(int id)
-        {
-            return context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.Id == id);
+            return mapper.MapUser(user);
         }
 
         public int? GetCurrentUserId(string token)
