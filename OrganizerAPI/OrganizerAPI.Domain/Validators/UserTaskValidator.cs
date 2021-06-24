@@ -13,7 +13,6 @@ namespace OrganizerAPI.Domain.Validators
     {
         public UserTaskValidator()
         {
-            RuleFor(ut => ut.Id).NotEmpty();
             RuleFor(ut => ut.Title).NotEmpty().Length(1, 50);
             RuleFor(ut => ut.Description).Length(1, 200);
             RuleFor(ut => ut.Status).NotEmpty().IsInEnum();

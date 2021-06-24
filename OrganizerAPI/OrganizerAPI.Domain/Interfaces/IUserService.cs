@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface IUserService
+    public interface IUserService : IService<UserDTO>
     {
+        Task<UserAuthResponseDTO> Registration(UserRequestDTO model, string ipAddress);
         UserAuthResponseDTO Authenticate(UserAuthRequestDTO model, string ipAddress);
         UserAuthResponseDTO UpdateRefreshToken(string token, string ipAddress);
         bool RevokeToken(string token, string ipAddress);

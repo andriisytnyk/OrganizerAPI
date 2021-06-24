@@ -15,5 +15,6 @@ namespace OrganizerAPI.Domain.Interfaces
 
         UserDTO MapUser(User value);
         User MapUser(UserDTO value);
+        User MapUser(UserRequestDTO value);
     }
 }

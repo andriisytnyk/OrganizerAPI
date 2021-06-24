@@ -79,8 +79,10 @@ namespace OrganizerAPI
             services.AddScoped<IUserService, UserService>();
 
             services.AddTransient<AbstractValidator<UserTaskDTO>, UserTaskValidator>();
+            services.AddTransient<AbstractValidator<UserRequestDTO>, UserValidator>();
 
             services.AddScoped<UserTaskRepository>();
+            services.AddScoped<UserRepository>();
 
             services.AddTransient<IMapper, Mapper>();
         }

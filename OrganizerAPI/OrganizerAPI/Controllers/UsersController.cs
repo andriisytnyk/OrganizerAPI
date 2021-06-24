@@ -22,6 +22,27 @@ namespace OrganizerAPI.Controllers
             this.userService = userService;
         }
 
+
+
+        [AllowAnonymous]
+        [HttpPost("registration")]
+        public async Task<IActionResult> Registration([FromBody] UserRequestDTO request)
+        {
+            try
+            {
+                var response = await userService.Registration(request, ipAddress());
+
+                setTokenCookie(response.RefreshToken);
+
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         // POST: users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]

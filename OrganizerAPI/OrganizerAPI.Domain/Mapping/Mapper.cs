@@ -37,6 +37,11 @@ namespace OrganizerAPI.Domain.Mapping
 
         public UserDTO MapUser(User value)
         {
+            var userTasks = new List<UserTaskDTO>();
+            foreach (var item in value.UserTasks)
+            {
+                userTasks.Add(MapUserTask(item));
+            }
             return new UserDTO
             {
                 Id = value.Id,
@@ -44,12 +49,17 @@ namespace OrganizerAPI.Domain.Mapping
                 LastName = value.LastName,
                 Username = value.Username,
                 Email = value.Email,
-                UserRefreshTokens = value.UserRefreshTokens
+                UserTasks = userTasks
             };
         }
 
         public User MapUser(UserDTO value)
         {
+            var userTasks = new List<UserTask>();
+            foreach (var item in value.UserTasks)
+            {
+                userTasks.Add(MapUserTask(item));
+            }
             return new User
             {
                 Id = value.Id,
@@ -57,7 +67,28 @@ namespace OrganizerAPI.Domain.Mapping
                 LastName = value.LastName,
                 Username = value.Username,
                 Email = value.Email,
-                UserRefreshTokens = value.UserRefreshTokens
+                UserTasks = userTasks
+            };
+        }
+
+        public User MapUser(UserRequestDTO value)
+        {
+            var userTasks = new List<UserTask>();
+            foreach (var item in value.UserTasks)
+            {
+                userTasks.Add(MapUserTask(item));
+            }
+            return new User
+            {
+                Id = value.Id,
+                FirstName = value.FirstName,
+                LastName = value.LastName,
+                Username = value.Username,
+                Email = value.Email,
+                UserTasks = userTasks,
+                Password = value.Password,
+                UserRefreshTokens = value.UserRefreshTokens,
+                Role = value.Role
             };
         }
     }

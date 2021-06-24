@@ -13,6 +13,8 @@ namespace OrganizerAPI.Shared.ModelsDTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Username { get; set; }
+        public string Email { get; set; }
+        public List<UserTaskDTO> UserTasks { get; set; }
         public string JwtToken { get; set; }
         /// <summary>
         /// Gets or sets token expiration time in seconds.
@@ -28,6 +30,8 @@ namespace OrganizerAPI.Shared.ModelsDTO
             FirstName = userDTO.FirstName;
             LastName = userDTO.LastName;
             Username = userDTO.Username;
+            Email = userDTO.Email;
+            UserTasks = userDTO.UserTasks;
             JwtToken = jwtToken;
             ExpiresIn = expiresIn;
             RefreshToken = refreshToken;
