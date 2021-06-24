@@ -98,7 +98,7 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                if (entity.Id == userId || (await userRepository.GetById(userId.Value)).Role.Name == "Admin")
+                if (entity.Id == userId || (await userRepository.GetById(userId.Value)).Role == Role.Admin)
                 {
                     var validationResult = validator.Validate(entity as UserRequestDTO);
                     if (!validationResult.IsValid)
@@ -116,7 +116,7 @@ namespace OrganizerAPI.Domain.Services
 
         public async Task Delete(UserDTO entity, int? userId = null)
         {
-            if (entity.Id == userId || (await userRepository.GetById(userId.Value)).Role.Name == "Admin")
+            if (entity.Id == userId || (await userRepository.GetById(userId.Value)).Role == Role.Admin)
             {
                 await userRepository.Delete(mapper.MapUser(entity));
             }
@@ -125,7 +125,7 @@ namespace OrganizerAPI.Domain.Services
 
         public async Task DeleteById(int id, int? userId = null)
         {
-            if (id == userId || (await userRepository.GetById(userId.Value)).Role.Name == "Admin")
+            if (id == userId || (await userRepository.GetById(userId.Value)).Role == Role.Admin)
             {
                 await userRepository.DeleteById(id);
             }
@@ -136,13 +136,16 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                var user = mapper.MapUser(await Create(model));
+                var validationResult = validator.Validate(model);
+                if (!validationResult.IsValid)
+                    throw new ValidationException(validationResult.Errors);
+                var user = await userRepository.Create(mapper.MapUser(model));
 
                 var tokens = generateAndSaveTokensPair(user, ipAddress);
 
                 return new UserAuthResponseDTO(mapper.MapUser(user), tokens.JwtToken, JWT_TOKEN_EXPIRES_IN, tokens.RefreshToken.Token);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 throw;

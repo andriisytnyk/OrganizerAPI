@@ -17,7 +17,7 @@ namespace OrganizerAPI.Models.Models
         [JsonIgnore]
         public string Password { get; set; }
         public string Email { get; set; }
-        public Role Role { get; set; }
+        public Role Role { get; set; } = Role.User;
 
         [JsonIgnore]
         public List<RefreshToken> UserRefreshTokens { get; set; }

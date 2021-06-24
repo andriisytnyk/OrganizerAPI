@@ -26,7 +26,6 @@ namespace OrganizerAPI.Infrastructure.Contexts
 
             modelBuilder.Entity<UserTask>(ConfigureUserTask);
             modelBuilder.Entity<User>(ConfigureUser);
-            modelBuilder.Entity<Role>(ConfigureRole);
         }
     }
 }
