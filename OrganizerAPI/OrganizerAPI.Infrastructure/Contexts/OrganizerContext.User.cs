@@ -32,6 +32,7 @@ namespace OrganizerAPI.Infrastructure.Contexts
                 .WithOne()
                 .HasForeignKey("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.HasIndex(u => u.Username).IsUnique();
         }
     }
 }

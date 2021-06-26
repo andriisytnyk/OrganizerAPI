@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Shared.ModelsDTO;
@@ -22,8 +23,106 @@ namespace OrganizerAPI.Controllers
             this.userService = userService;
         }
 
+        // GET: users
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                return Ok(await userService.GetAll());
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
 
+        // GET: users/{id}
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> Get([FromRoute] int id)
+        {
+            try
+            {
+                return Ok(await userService.GetById(id));
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
 
+        // POST: users
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] UserDTO user)
+        {
+            try
+            {
+                string authToken = Request.Cookies["refreshToken"];
+                return Created(
+                    Request.GetDisplayUrl(),
+                    await userService.Create(
+                        user,
+                        userService.GetCurrentUserId(authToken))
+                    );
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        // PUT: users/{id}
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put([FromBody] UserDTO user)
+        {
+            try
+            {
+                string authToken = Request.Cookies["refreshToken"];
+                await userService.Update(
+                    user,
+                    userService.GetCurrentUserId(authToken));
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        // DELETE: users
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody] UserDTO user)
+        {
+            try
+            {
+                string authToken = Request.Cookies["refreshToken"];
+                await userService.Delete(user, userService.GetCurrentUserId(authToken));
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
+
+        // DELETE: users/{id}
+        [Route("{id:int}")]
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            try
+            {
+                string authToken = Request.Cookies["refreshToken"];
+                await userService.DeleteById(id, userService.GetCurrentUserId(authToken));
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
+
+        // POST: users/registration
         [AllowAnonymous]
         [HttpPost("registration")]
         public async Task<IActionResult> Registration([FromBody] UserRequestDTO request)
@@ -36,10 +135,9 @@ namespace OrganizerAPI.Controllers
 
                 return Ok(response);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ex);
             }
         }
 

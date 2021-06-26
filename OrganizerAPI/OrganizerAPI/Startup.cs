@@ -40,7 +40,7 @@ namespace OrganizerAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            //services.AddControllers().AddNewtonsoftJson(options => 
+            //services.AddControllers().AddNewtonsoftJson(options =>
             //    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             //);
             services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);

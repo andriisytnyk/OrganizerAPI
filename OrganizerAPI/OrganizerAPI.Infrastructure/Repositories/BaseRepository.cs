@@ -22,50 +22,92 @@ namespace OrganizerAPI.Infrastructure.Repositories
 
         public async Task<T> Create(T entity)
         {
-            await organizerContext.Set<T>().AddAsync(entity);
+            try
+            {
+                await organizerContext.Set<T>().AddAsync(entity);
 
-            await organizerContext.SaveChangesAsync();
+                await organizerContext.SaveChangesAsync();
 
-            return entity;
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task Delete(T entity)
         {
-            // organizerContext.Entry(entity).State = EntityState.Deleted;
-            organizerContext.Set<T>().Remove(entity);
+            try
+            {
+                // organizerContext.Entry(entity).State = EntityState.Deleted;
+                organizerContext.Set<T>().Remove(entity);
 
-            await organizerContext.SaveChangesAsync();
+                await organizerContext.SaveChangesAsync();
 
-            return;
+                return;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task DeleteById(int id)
         {
-            organizerContext.Set<T>().Remove(await organizerContext.Set<T>().FindAsync(id));
+            try
+            {
+                organizerContext.Set<T>().Remove(await organizerContext.Set<T>().FindAsync(id));
 
-            await organizerContext.SaveChangesAsync();
+                await organizerContext.SaveChangesAsync();
 
-            return;
+                return;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<T> GetById(int id)
         {
-            return await organizerContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(t => t.Id == id);
+            try
+            {
+                return await organizerContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(t => t.Id == id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<List<T>> GetList()
-        {  
-            return await organizerContext.Set<T>().AsNoTracking().ToListAsync();
+        {
+            try
+            {
+                return await organizerContext.Set<T>().AsNoTracking().ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<T> Update(T entity)
         {
-            // organizerContext.Entry(entity).State = EntityState.Modified;
-            organizerContext.Update(entity);
+            try
+            {
+                // organizerContext.Entry(entity).State = EntityState.Modified;
+                organizerContext.Update(entity);
 
-            await organizerContext.SaveChangesAsync();
+                await organizerContext.SaveChangesAsync();
 
-            return entity;
+                return entity;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

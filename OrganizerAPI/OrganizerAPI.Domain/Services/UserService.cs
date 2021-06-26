@@ -82,10 +82,14 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                var validationResult = validator.Validate(entity as UserRequestDTO);
-                if (!validationResult.IsValid)
-                    throw new ValidationException(validationResult.Errors);
-                return mapper.MapUser(await userRepository.Create(mapper.MapUser(entity as UserRequestDTO)));                  
+                if ((await userRepository.GetById(userId.Value)).Role == Role.Admin)
+                {
+                    var validationResult = validator.Validate(entity as UserRequestDTO);
+                    if (!validationResult.IsValid)
+                        throw new ValidationException(validationResult.Errors);
+                    return mapper.MapUser(await userRepository.Create(mapper.MapUser(entity as UserRequestDTO)));
+                }
+                throw new Exception("User doesn't have sufficient rights to create new user.");
             }
             catch (Exception)
             {
@@ -145,9 +149,8 @@ namespace OrganizerAPI.Domain.Services
 
                 return new UserAuthResponseDTO(mapper.MapUser(user), tokens.JwtToken, JWT_TOKEN_EXPIRES_IN, tokens.RefreshToken.Token);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 throw;
             }
         }
