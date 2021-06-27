@@ -1,20 +1,15 @@
-﻿using OrganizerAPI.Models.Models;
-using OrganizerAPI.Shared.ModelsDTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OrganizerAPI.Shared.ModelsDTO;
 using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Interfaces
 {
-    public interface IUserService : IService<UserDTO>
+    public interface IUserService : IService<UserDto>
     {
-        Task<UserAuthResponseDTO> Registration(UserRequestDTO model, string ipAddress);
-        UserAuthResponseDTO Authenticate(UserAuthRequestDTO model, string ipAddress);
-        UserAuthResponseDTO UpdateRefreshToken(string token, string ipAddress);
-        bool RevokeToken(string token, string ipAddress);
-        UserDTO GetCurrentUser(string token);
-        int? GetCurrentUserId(string token);
+        Task<UserAuthResponseDto> Registration(UserRequestDto model, string ipAddress);
+        UserAuthResponseDto Authenticate(UserAuthRequestDto model, string ipAddress);
+        UserAuthResponseDto UpdateRefreshToken(string token, string ipAddress);
+        void RevokeToken(string token, string ipAddress);
+        UserDto GetCurrentUser(string token);
+        int GetCurrentUserId(string token);
     }
 }

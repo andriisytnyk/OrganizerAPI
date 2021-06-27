@@ -15,8 +15,8 @@ namespace OrganizerAPI.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("ProductVersion", "3.1.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("OrganizerAPI.Models.Common.RefreshToken", b =>
@@ -68,28 +68,28 @@ namespace OrganizerAPI.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(30)")
+                        .HasMaxLength(30);
 
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
 
                     b.HasKey("Id")
-                        .IsClustered();
+                        .HasAnnotation("SqlServer:Clustered", true);
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -108,8 +108,8 @@ namespace OrganizerAPI.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(200)")
+                        .HasMaxLength(200);
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
@@ -119,15 +119,15 @@ namespace OrganizerAPI.Infrastructure.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50)
                         .HasDefaultValue("New task");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .IsClustered();
+                        .HasAnnotation("SqlServer:Clustered", true);
 
                     b.HasIndex("UserId");
 
@@ -149,13 +149,6 @@ namespace OrganizerAPI.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("OrganizerAPI.Models.Models.User", b =>
-                {
-                    b.Navigation("UserRefreshTokens");
-
-                    b.Navigation("UserTasks");
                 });
 #pragma warning restore 612, 618
         }

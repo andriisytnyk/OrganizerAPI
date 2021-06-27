@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using OrganizerAPI.Shared.Exceptions;
 
 namespace OrganizerAPI.Domain.Services
 {
@@ -25,38 +26,33 @@ namespace OrganizerAPI.Domain.Services
         /// <summary>
         /// JWT token expiration time in seconds.
         /// </summary>
-        private const int JWT_TOKEN_EXPIRES_IN = 1800;
+        private const int JwtTokenExpiresIn = 1800;
 
-        private OrganizerContext context;
-        private readonly UserRepository userRepository;
-        private readonly JWTSettings jwtSettings;
-        private readonly IMapper mapper;
-        private readonly AbstractValidator<UserRequestDTO> validator;
+        private readonly OrganizerContext _context;
+        private readonly UserRepository _userRepository;
+        private readonly JwtSettings _jwtSettings;
+        private readonly IMapper _mapper;
+        private readonly AbstractValidator<UserRequestDto> _validator;
 
         public UserService(
             OrganizerContext context,
             UserRepository userRepository,
-            IOptions<JWTSettings> jwtSettings,
+            IOptions<JwtSettings> jwtSettings,
             IMapper mapper,
-            AbstractValidator<UserRequestDTO> validator)
+            AbstractValidator<UserRequestDto> validator)
         {
-            this.context = context;
-            this.userRepository = userRepository;
-            this.jwtSettings = jwtSettings.Value;
-            this.mapper = mapper;
-            this.validator = validator;
+            _context = context;
+            _userRepository = userRepository;
+            _jwtSettings = jwtSettings.Value;
+            _mapper = mapper;
+            _validator = validator;
         }
 
-        public async Task<List<UserDTO>> GetAll(int? userId = null)
+        public async Task<List<UserDto>> GetAll(int? userId = null)
         {
             try
             {
-                var result = new List<UserDTO>();
-                foreach (var item in await userRepository.GetList())
-                {
-                    result.Add(mapper.MapUser(item));
-                }
-                return result;
+                return (await _userRepository.GetList()).Select(u => _mapper.MapUser(u)).ToList();
             }
             catch (Exception)
             {
@@ -65,11 +61,11 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserDTO> GetById(int id, int? userId = null)
+        public async Task<UserDto> GetById(int id, int? userId = null)
         {
             try
             {
-                return mapper.MapUser(await userRepository.GetById(id));
+                return _mapper.MapUser(await _userRepository.GetById(id));
             }
             catch (Exception)
             {
@@ -78,18 +74,20 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserDTO> Create(UserDTO entity, int? userId = null)
+        public async Task<UserDto> Create(UserDto entity, int? userId = null)
         {
             try
             {
-                if ((await userRepository.GetById(userId.Value)).Role == Role.Admin)
-                {
-                    var validationResult = validator.Validate(entity as UserRequestDTO);
-                    if (!validationResult.IsValid)
-                        throw new ValidationException(validationResult.Errors);
-                    return mapper.MapUser(await userRepository.Create(mapper.MapUser(entity as UserRequestDTO)));
-                }
-                throw new Exception("User doesn't have sufficient rights to create new user.");
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+                if ((await _userRepository.GetById(userId.Value)).Role != Role.Admin)
+                    throw new Exception("User doesn't have sufficient rights to create new user.");
+
+                var validationResult = await _validator.ValidateAsync(entity as UserRequestDto);
+                if (!validationResult.IsValid)
+                    throw new ValidationException(validationResult.Errors);
+
+                return _mapper.MapUser(await _userRepository.Create(_mapper.MapUser(entity as UserRequestDto)));
             }
             catch (Exception)
             {
@@ -98,56 +96,64 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserDTO> Update(UserDTO entity, int? userId = null)
+        public async Task<UserDto> Update(UserDto entity, int? userId = null)
         {
             try
             {
-                if (entity.Id == userId || (await userRepository.GetById(userId.Value)).Role == Role.Admin)
-                {
-                    var validationResult = validator.Validate(entity as UserRequestDTO);
-                    if (!validationResult.IsValid)
-                        throw new ValidationException(validationResult.Errors);
-                    return mapper.MapUser(await userRepository.Update(mapper.MapUser(entity as UserRequestDTO)));
-                }
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+                if (entity.Id != userId && (await _userRepository.GetById(userId.Value)).Role != Role.Admin)
+                    throw new Exception("User doesn't have sufficient rights to receive the data.");
+
+                var validationResult = await _validator.ValidateAsync(entity as UserRequestDto);
+                if (!validationResult.IsValid)
+                    throw new ValidationException(validationResult.Errors);
+
+                return _mapper.MapUser(await _userRepository.Update(_mapper.MapUser(entity as UserRequestDto)));
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task Delete(UserDto entity, int? userId = null)
+        {
+            if (userId == null)
+                throw new Exception("UserId was not included.");
+            if (entity.Id != userId && (await _userRepository.GetById(userId.Value)).Role != Role.Admin)
                 throw new Exception("User doesn't have sufficient rights to receive the data.");
-            }
-            catch (Exception)
-            {
 
-                throw;
-            }
-        }
-
-        public async Task Delete(UserDTO entity, int? userId = null)
-        {
-            if (entity.Id == userId || (await userRepository.GetById(userId.Value)).Role == Role.Admin)
-            {
-                await userRepository.Delete(mapper.MapUser(entity));
-            }
-            throw new Exception("User doesn't have sufficient rights to receive the data.");
+            await _userRepository.Delete(_mapper.MapUser(entity));
         }
 
         public async Task DeleteById(int id, int? userId = null)
         {
-            if (id == userId || (await userRepository.GetById(userId.Value)).Role == Role.Admin)
-            {
-                await userRepository.DeleteById(id);
-            }
-            throw new Exception("User doesn't have sufficient rights to receive the data.");
+            if (userId == null)
+                throw new Exception("UserId was not included.");
+            if (id != userId && (await _userRepository.GetById(userId.Value)).Role != Role.Admin)
+                throw new Exception("User doesn't have sufficient rights to receive the data.");
+
+            await _userRepository.DeleteById(id);
         }
 
-        public async Task<UserAuthResponseDTO> Registration(UserRequestDTO model, string ipAddress)
+        public async Task<UserAuthResponseDto> Registration(UserRequestDto model, string ipAddress)
         {
             try
             {
-                var validationResult = validator.Validate(model);
+                var validationResult = await _validator.ValidateAsync(model);
                 if (!validationResult.IsValid)
                     throw new ValidationException(validationResult.Errors);
-                var user = await userRepository.Create(mapper.MapUser(model));
 
-                var tokens = generateAndSaveTokensPair(user, ipAddress);
+                if ((await _userRepository.GetList()).Any(u => u.Username == model.Username))
+                    throw new Exception("User with the same username already exists.");
+                
+                var user = await _userRepository.Create(_mapper.MapUser(model));
 
-                return new UserAuthResponseDTO(mapper.MapUser(user), tokens.JwtToken, JWT_TOKEN_EXPIRES_IN, tokens.RefreshToken.Token);
+                var tokens = GenerateAndSaveTokensPair(user, ipAddress);
+
+                return new UserAuthResponseDto(_mapper.MapUser(user), tokens.JwtToken, JwtTokenExpiresIn, tokens.RefreshToken.Token);
             }
             catch (Exception)
             {
@@ -155,113 +161,155 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public UserAuthResponseDTO Authenticate(UserAuthRequestDTO model, string ipAddress)
+        public UserAuthResponseDto Authenticate(UserAuthRequestDto model, string ipAddress)
         {
-            var user = context.Users.SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
+                    throw new InvalidAuthDataException("Username and password are required.");
 
-            // return null if user not found
-            if (user == null) 
-                return null;
+                var user = _context.Users.SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
 
-            var tokens = generateAndSaveTokensPair(user, ipAddress);
+                if (user == null)
+                    throw new InvalidAuthDataException("Username or password is incorrect.");
 
-            return new UserAuthResponseDTO(mapper.MapUser(user), tokens.JwtToken, JWT_TOKEN_EXPIRES_IN, tokens.RefreshToken.Token);
+                var tokens = GenerateAndSaveTokensPair(user, ipAddress);
+
+                return new UserAuthResponseDto(_mapper.MapUser(user), tokens.JwtToken, JwtTokenExpiresIn, tokens.RefreshToken.Token);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public UserAuthResponseDTO UpdateRefreshToken(string token, string ipAddress)
+        public UserAuthResponseDto UpdateRefreshToken(string token, string ipAddress)
         {
-            var user = context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+            try
+            {
+                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
 
-            // return null if no user found with token
-            if (user == null) 
-                return null;
+                // return exception if no user found with token
+                if (user == null)
+                    throw new UserNotFoundException("User with such token was not found.");
 
-            var refreshToken = user.UserRefreshTokens.Single(rt => rt.Token == token);
+                var refreshToken = user.UserRefreshTokens.Single(rt => rt.Token == token);
 
-            // return null if token is no longer active
-            if (!refreshToken.IsActive) 
-                return null;
+                // return exception if token is no longer active
+                if (!refreshToken.IsActive)
+                    throw new NotActiveTokenException("Token is not longer active.");
 
-            var tokens = generateAndSaveTokensPair(user, ipAddress);
+                var tokens = GenerateAndSaveTokensPair(user, ipAddress);
 
-            return new UserAuthResponseDTO(mapper.MapUser(user), tokens.JwtToken, JWT_TOKEN_EXPIRES_IN, tokens.RefreshToken.Token);
+                return new UserAuthResponseDto(_mapper.MapUser(user), tokens.JwtToken, JwtTokenExpiresIn, tokens.RefreshToken.Token);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public bool RevokeToken(string token, string ipAddress)
+        public void RevokeToken(string token, string ipAddress)
         {
-            var user = context.Users.SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+            try
+            {
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token is required");
 
-            // return false if no user found with token
-            if (user == null) 
-                return false;
+                var user = _context.Users.SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
 
-            var refreshToken = user.UserRefreshTokens.Single(rt => rt.Token == token);
+                // return exception if no user found with token
+                if (user == null)
+                    throw new UserNotFoundException("User with such token was not found.");
 
-            // return false if token is not active
-            if (!refreshToken.IsActive) 
-                return false;
+                var refreshToken = user.UserRefreshTokens.Single(rt => rt.Token == token);
 
-            // revoke token and save
-            refreshToken.Revoked = DateTime.UtcNow;
-            refreshToken.RevokedByIp = ipAddress;
-            context.Update(user);
-            context.SaveChanges();
+                // return exception if token is not active
+                if (!refreshToken.IsActive)
+                    throw new NotActiveTokenException("Token is not longer active.");
 
-            return true;
+                // revoke token and save
+                refreshToken.Revoked = DateTime.UtcNow;
+                refreshToken.RevokedByIp = ipAddress;
+                _context.Update(user);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public UserDTO GetCurrentUser(string token)
+        public UserDto GetCurrentUser(string token)
         {
-            var user = context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+            try
+            {
+                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
 
-            return mapper.MapUser(user);
+                if (user == null)
+                    throw new UserNotFoundException("User with such token was not found.");
+
+                return _mapper.MapUser(user);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public int? GetCurrentUserId(string token)
+        public int GetCurrentUserId(string token)
         {
-            var user = context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+            try
+            {
+                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
 
-            return user?.Id;
+                if (user == null)
+                    throw new Exception("User with such token was not found.");
+
+                return user.Id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        private string generateJwtToken(User user)
+        private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(JWT_TOKEN_EXPIRES_IN),
+                Expires = DateTime.UtcNow.AddMinutes(JwtTokenExpiresIn),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
 
-        private RefreshToken generateRefreshToken(string ipAddress)
+        private RefreshToken GenerateRefreshToken(string ipAddress)
         {
-            using (var rngCryptoServiceProvider = new RNGCryptoServiceProvider())
+            using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
+            var randomBytes = new byte[64];
+            rngCryptoServiceProvider.GetBytes(randomBytes);
+            return new RefreshToken
             {
-                var randomBytes = new byte[64];
-                rngCryptoServiceProvider.GetBytes(randomBytes);
-                return new RefreshToken
-                {
-                    Token = Convert.ToBase64String(randomBytes),
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    Created = DateTime.UtcNow,
-                    CreatedByIp = ipAddress
-                };
-            }
+                Token = Convert.ToBase64String(randomBytes),
+                Expires = DateTime.UtcNow.AddDays(7),
+                Created = DateTime.UtcNow,
+                CreatedByIp = ipAddress
+            };
         }
 
-        private TokensPair generateAndSaveTokensPair(User user, string ipAddress)
+        private TokensPair GenerateAndSaveTokensPair(User user, string ipAddress)
         {
             // generate jwt and refresh tokens
-            var jwtToken = generateJwtToken(user);
-            var refreshToken = generateRefreshToken(ipAddress);
+            var jwtToken = GenerateJwtToken(user);
+            var refreshToken = GenerateRefreshToken(ipAddress);
 
             // revoke last used refresh token
             var refreshTokens = user.UserRefreshTokens;
@@ -275,8 +323,8 @@ namespace OrganizerAPI.Domain.Services
 
             // save refresh token
             user.UserRefreshTokens.Add(refreshToken);
-            context.Update(user);
-            context.SaveChanges();
+            _context.Update(user);
+            _context.SaveChanges();
 
             return new TokensPair(jwtToken, refreshToken);
         }

@@ -47,10 +47,10 @@ namespace OrganizerAPI
 
             // configure strongly typed settings objects
             var jwtSettingsSection = Configuration.GetSection("JWTSettings");
-            services.Configure<JWTSettings>(jwtSettingsSection);
+            services.Configure<JwtSettings>(jwtSettingsSection);
 
             // configure jwt authentication
-            var jwtSettings = jwtSettingsSection.Get<JWTSettings>();
+            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
             var key = Encoding.ASCII.GetBytes(jwtSettings.Secret);
             services.AddAuthentication(x =>
             {
@@ -78,8 +78,8 @@ namespace OrganizerAPI
             services.AddScoped<IUserTaskService, UserTaskService>();
             services.AddScoped<IUserService, UserService>();
 
-            services.AddTransient<AbstractValidator<UserTaskDTO>, UserTaskValidator>();
-            services.AddTransient<AbstractValidator<UserRequestDTO>, UserValidator>();
+            services.AddTransient<AbstractValidator<UserTaskDto>, UserTaskValidator>();
+            services.AddTransient<AbstractValidator<UserRequestDto>, UserValidator>();
 
             services.AddScoped<UserTaskRepository>();
             services.AddScoped<UserRepository>();
@@ -88,7 +88,7 @@ namespace OrganizerAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) //OrganizerContext organizerContext
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -96,11 +96,6 @@ namespace OrganizerAPI
             }
 
             app.UseHttpsRedirection();
-
-            // add hardcoded test user to db on startup
-            // plain text password is used for simplicity, hashed passwords should be used in production applications
-            //organizerContext.Users.Add(new User { FirstName = "Test", LastName = "User", Username = "test", Password = "test" });
-            //organizerContext.SaveChanges();
 
             app.UseRouting();
 

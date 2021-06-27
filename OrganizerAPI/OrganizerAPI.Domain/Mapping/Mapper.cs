@@ -11,9 +11,9 @@ namespace OrganizerAPI.Domain.Mapping
 {
     public class Mapper : IMapper
     {
-        public UserTaskDTO MapUserTask(UserTask value)
+        public UserTaskDto MapUserTask(UserTask value)
         {
-            return new UserTaskDTO
+            return new UserTaskDto
             {
                 Id = value.Id,
                 Title = value.Title,
@@ -23,7 +23,7 @@ namespace OrganizerAPI.Domain.Mapping
             };
         }
 
-        public UserTask MapUserTask(UserTaskDTO value)
+        public UserTask MapUserTask(UserTaskDto value)
         {
             return new UserTask
             {
@@ -35,14 +35,14 @@ namespace OrganizerAPI.Domain.Mapping
             };
         }
 
-        public UserDTO MapUser(User value)
+        public UserDto MapUser(User value)
         {
-            var userTasks = new List<UserTaskDTO>();
+            var userTasks = new List<UserTaskDto>();
             foreach (var item in value.UserTasks)
             {
                 userTasks.Add(MapUserTask(item));
             }
-            return new UserDTO
+            return new UserDto
             {
                 Id = value.Id,
                 FirstName = value.FirstName,
@@ -53,7 +53,7 @@ namespace OrganizerAPI.Domain.Mapping
             };
         }
 
-        public User MapUser(UserDTO value)
+        public User MapUser(UserDto value)
         {
             var userTasks = new List<UserTask>();
             foreach (var item in value.UserTasks)
@@ -71,7 +71,7 @@ namespace OrganizerAPI.Domain.Mapping
             };
         }
 
-        public User MapUser(UserRequestDTO value)
+        public User MapUser(UserRequestDto value)
         {
             var userTasks = new List<UserTask>();
             foreach (var item in value.UserTasks)

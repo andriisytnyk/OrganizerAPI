@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OrganizerAPI.Models.Common
+﻿namespace OrganizerAPI.Models.Common
 {
     public class TokensPair
     {
@@ -13,8 +7,8 @@ namespace OrganizerAPI.Models.Common
 
         public TokensPair(string jwtToken, RefreshToken refreshToken)
         {
-            this.JwtToken = jwtToken;
-            this.RefreshToken = refreshToken;
+            JwtToken = jwtToken;
+            RefreshToken = refreshToken;
         }
     }
 }

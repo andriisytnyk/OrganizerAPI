@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Validators
 {
-    public class UserTaskValidator : AbstractValidator<UserTaskDTO>
+    public class UserTaskValidator : AbstractValidator<UserTaskDto>
     {
         public UserTaskValidator()
         {

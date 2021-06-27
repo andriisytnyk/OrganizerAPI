@@ -13,37 +13,36 @@ namespace OrganizerAPI.Domain.Services
 {
     public class UserTaskService : IUserTaskService
     {
-        private readonly UserTaskRepository repository;
-        private readonly IMapper mapper;
-        private readonly AbstractValidator<UserTaskDTO> validator;
+        private readonly UserTaskRepository _repository;
+        private readonly IMapper _mapper;
+        private readonly AbstractValidator<UserTaskDto> _validator;
 
         public UserTaskService(
             UserTaskRepository taskRepository,
             IMapper mapper,
-            AbstractValidator<UserTaskDTO> userTaskValidator
+            AbstractValidator<UserTaskDto> userTaskValidator
             )
         {
-            this.repository = taskRepository;
-            this.mapper = mapper;
-            this.validator = userTaskValidator;
+            _repository = taskRepository;
+            _mapper = mapper;
+            _validator = userTaskValidator;
         }
 
-        public async Task<UserTaskDTO> Create(UserTaskDTO entity, int? userId = null)
+        public async Task<UserTaskDto> Create(UserTaskDto entity, int? userId = null)
         {
             try
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                var validationResult = validator.Validate(entity);
-                if (validationResult.IsValid)
-                {
-                    var userTask = mapper.MapUserTask(entity);
-                    userTask.UserId = userId.Value;
-                    var result = mapper.MapUserTask(await repository.Create(userTask));
-                    return result;
-                }
-                else
+
+                var validationResult = await _validator.ValidateAsync(entity);
+                if (!validationResult.IsValid) 
                     throw new ValidationException(validationResult.Errors);
+
+                var userTask = _mapper.MapUserTask(entity);
+                userTask.UserId = userId.Value;
+                var result = _mapper.MapUserTask(await _repository.Create(userTask));
+                return result;
             }
             catch (Exception)
             {
@@ -51,16 +50,19 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task Delete(UserTaskDTO entity, int? userId = null)
+        public async Task Delete(UserTaskDto entity, int? userId = null)
         {
             try
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                var userTask = await repository.GetById(entity.Id);
+
+                var userTask = await _repository.GetById(entity.Id);
+
                 if (userTask.UserId != userId)
                     throw new Exception("User isn't this task owner.");
-                await repository.Delete(userTask);
+
+                await _repository.Delete(userTask);
             }
             catch (Exception)
             {
@@ -74,10 +76,13 @@ namespace OrganizerAPI.Domain.Services
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                var userTask = await repository.GetById(id);
+
+                var userTask = await _repository.GetById(id);
+
                 if (userTask.UserId != userId)
                     throw new Exception("User isn't this task owner.");
-                await repository.DeleteById(id);
+
+                await _repository.DeleteById(id);
             }
             catch (Exception)
             {
@@ -85,18 +90,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<List<UserTaskDTO>> GetAll(int? userId = null)
+        public async Task<List<UserTaskDto>> GetAll(int? userId = null)
         {
             try
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                var result = new List<UserTaskDTO>();
-                foreach (var item in (await repository.GetList()).Where(ut => ut.UserId == userId))
-                {
-                    result.Add(mapper.MapUserTask(item));
-                }
-                return result;
+
+                return (await _repository.GetList()).Where(ut => ut.UserId == userId).Select(item => _mapper.MapUserTask(item)).ToList();
             }
             catch (Exception)
             {
@@ -104,16 +105,19 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserTaskDTO> GetById(int id, int? userId = null)
+        public async Task<UserTaskDto> GetById(int id, int? userId = null)
         {
             try
             {
                 if (userId == null)
                     throw new Exception("UserId was not included.");
-                var userTask = await repository.GetById(id);
+
+                var userTask = await _repository.GetById(id);
+
                 if (userTask.UserId != userId)
                     throw new Exception("User isn't this task owner.");
-                return mapper.MapUserTask(userTask);
+
+                return _mapper.MapUserTask(userTask);
             }
             catch (Exception)
             {
@@ -121,21 +125,26 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public async Task<UserTaskDTO> Update(UserTaskDTO entity, int? userId = null)
+        public async Task<UserTaskDto> Update(UserTaskDto entity, int? userId = null)
         {
-            if (userId == null)
-                throw new Exception("UserId was not included.");
-            var validationResult = validator.Validate(entity);
-            if (!validationResult.IsValid)
-                throw new ValidationException(validationResult.Errors);
             try
             {
-                var userTask = await repository.GetById(entity.Id);
+                if (userId == null)
+                    throw new Exception("UserId was not included.");
+
+                var validationResult = await _validator.ValidateAsync(entity);
+                if (!validationResult.IsValid)
+                    throw new ValidationException(validationResult.Errors);
+            
+                var userTask = await _repository.GetById(entity.Id);
+
                 if (userTask.UserId != userId)
                     throw new Exception("User isn't this task owner.");
-                var result = mapper.MapUserTask(entity);
+
+                var result = _mapper.MapUserTask(entity);
                 result.UserId = userId.Value;
-                return mapper.MapUserTask(await repository.Update(result));
+
+                return _mapper.MapUserTask(await _repository.Update(result));
             }
             catch (Exception)
             {

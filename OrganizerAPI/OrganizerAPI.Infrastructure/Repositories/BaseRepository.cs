@@ -4,33 +4,31 @@ using OrganizerAPI.Infrastructure.Interfaces;
 using OrganizerAPI.Models.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OrganizerAPI.Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IRepository<T> where T : Entity
     {
-        public readonly OrganizerContext organizerContext;
+        public readonly OrganizerContext OrganizerContext;
         //protected readonly OrganizerContext organizerContext;
 
-        public BaseRepository(OrganizerContext oContext)
+        protected BaseRepository(OrganizerContext oContext)
         {
-            organizerContext = oContext ?? throw new ArgumentNullException(nameof(oContext));
+            OrganizerContext = oContext ?? throw new ArgumentNullException(nameof(oContext));
         }
 
         public async Task<T> Create(T entity)
         {
             try
             {
-                await organizerContext.Set<T>().AddAsync(entity);
+                await OrganizerContext.Set<T>().AddAsync(entity);
 
-                await organizerContext.SaveChangesAsync();
+                await OrganizerContext.SaveChangesAsync();
 
                 return entity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -41,9 +39,9 @@ namespace OrganizerAPI.Infrastructure.Repositories
             try
             {
                 // organizerContext.Entry(entity).State = EntityState.Deleted;
-                organizerContext.Set<T>().Remove(entity);
+                OrganizerContext.Set<T>().Remove(entity);
 
-                await organizerContext.SaveChangesAsync();
+                await OrganizerContext.SaveChangesAsync();
 
                 return;
             }
@@ -57,9 +55,9 @@ namespace OrganizerAPI.Infrastructure.Repositories
         {
             try
             {
-                organizerContext.Set<T>().Remove(await organizerContext.Set<T>().FindAsync(id));
+                OrganizerContext.Set<T>().Remove(await OrganizerContext.Set<T>().FindAsync(id));
 
-                await organizerContext.SaveChangesAsync();
+                await OrganizerContext.SaveChangesAsync();
 
                 return;
             }
@@ -73,7 +71,7 @@ namespace OrganizerAPI.Infrastructure.Repositories
         {
             try
             {
-                return await organizerContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(t => t.Id == id);
+                return await OrganizerContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(t => t.Id == id);
             }
             catch (Exception)
             {
@@ -85,7 +83,7 @@ namespace OrganizerAPI.Infrastructure.Repositories
         {
             try
             {
-                return await organizerContext.Set<T>().AsNoTracking().ToListAsync();
+                return await OrganizerContext.Set<T>().AsNoTracking().ToListAsync();
             }
             catch (Exception)
             {
@@ -98,9 +96,9 @@ namespace OrganizerAPI.Infrastructure.Repositories
             try
             {
                 // organizerContext.Entry(entity).State = EntityState.Modified;
-                organizerContext.Update(entity);
+                OrganizerContext.Update(entity);
 
-                await organizerContext.SaveChangesAsync();
+                await OrganizerContext.SaveChangesAsync();
 
                 return entity;
             }
