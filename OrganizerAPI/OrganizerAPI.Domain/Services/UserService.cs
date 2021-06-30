@@ -218,7 +218,7 @@ namespace OrganizerAPI.Domain.Services
                 if (string.IsNullOrEmpty(token))
                     throw new Exception("Token is required");
 
-                var user = _context.Users.SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
 
                 // return exception if no user found with token
                 if (user == null)

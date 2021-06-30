@@ -28,7 +28,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                string authToken = Request.Cookies["refreshToken"];
+                var authToken = Request.Cookies["refreshToken"];
                 return Ok(await _userTaskService.GetAll(_userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
@@ -43,7 +43,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                string authToken = Request.Cookies["refreshToken"];
+                var authToken = Request.Cookies["refreshToken"];
                 return Ok(await _userTaskService.GetById(id, _userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
@@ -58,7 +58,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                string authToken = Request.Cookies["refreshToken"];
+                var authToken = Request.Cookies["refreshToken"];
                 return Created(
                     Request.GetDisplayUrl(), 
                     await _userTaskService.Create(
@@ -78,7 +78,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                string authToken = Request.Cookies["refreshToken"];
+                var authToken = Request.Cookies["refreshToken"];
                 await _userTaskService.Update(
                     userTask, 
                     _userService.GetCurrentUserId(authToken));
@@ -96,7 +96,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                string authToken = Request.Cookies["refreshToken"];
+                var authToken = Request.Cookies["refreshToken"];
                 await _userTaskService.Delete(userTask, _userService.GetCurrentUserId(authToken));
                 return NoContent();
             }
@@ -112,7 +112,7 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                string authToken = Request.Cookies["refreshToken"];
+                var authToken = Request.Cookies["refreshToken"];
                 await _userTaskService.DeleteById(id, _userService.GetCurrentUserId(authToken));
                 return NoContent();
             }
