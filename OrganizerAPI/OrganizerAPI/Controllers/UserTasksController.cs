@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Shared.ModelsDTO;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrganizerAPI.Controllers
 {
-    [Route("user-tasks")]
+    [Authorize]
     [ApiController]
+    [Route("user-tasks")]
     public class UserTasksController : ControllerBase
     {
-        readonly IUserTaskService service;
+        private readonly IUserTaskService _userTaskService;
+        private readonly IUserService _userService;
 
-        public UserTasksController(IUserTaskService userTaskService)
+        public UserTasksController(IUserTaskService userTaskService, IUserService userService)
         {
-            service = userTaskService;
+            _userTaskService = userTaskService;
+            _userService = userService;
         }
 
         // GET: user-tasks
@@ -26,7 +28,8 @@ namespace OrganizerAPI.Controllers
         {
             try
             {
-                return Ok(await service.GetAll());
+                var authToken = Request.Cookies["refreshToken"];
+                return Ok(await _userTaskService.GetAll(_userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -35,13 +38,13 @@ namespace OrganizerAPI.Controllers
         }
 
         // GET: user-tasks/{id}
-        [Route("{id:int}")]
-        [HttpGet]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
             try
             {
-                return Ok(await service.GetById(id));
+                var authToken = Request.Cookies["refreshToken"];
+                return Ok(await _userTaskService.GetById(id, _userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -51,11 +54,17 @@ namespace OrganizerAPI.Controllers
 
         // POST: user-tasks
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] UserTaskDTO userTask)
+        public async Task<IActionResult> Post([FromBody] UserTaskDto userTask)
         {
             try
             {
-                return Ok(await service.Create(userTask));
+                var authToken = Request.Cookies["refreshToken"];
+                return Created(
+                    Request.GetDisplayUrl(), 
+                    await _userTaskService.Create(
+                        userTask, 
+                        _userService.GetCurrentUserId(authToken))
+                    );
             }
             catch (Exception)
             {
@@ -65,11 +74,14 @@ namespace OrganizerAPI.Controllers
 
         // PUT: user-tasks
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] UserTaskDTO userTask)
+        public async Task<IActionResult> Put([FromBody] UserTaskDto userTask)
         {
             try
             {
-                await service.Update(userTask);
+                var authToken = Request.Cookies["refreshToken"];
+                await _userTaskService.Update(
+                    userTask, 
+                    _userService.GetCurrentUserId(authToken));
                 return Ok();
             }
             catch (Exception)
@@ -80,12 +92,13 @@ namespace OrganizerAPI.Controllers
 
         // DELETE: user-tasks
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] UserTaskDTO userTask)
+        public async Task<IActionResult> Delete([FromBody] UserTaskDto userTask)
         {
             try
             {
-                await service.Delete(userTask);
-                return Ok();
+                var authToken = Request.Cookies["refreshToken"];
+                await _userTaskService.Delete(userTask, _userService.GetCurrentUserId(authToken));
+                return NoContent();
             }
             catch (Exception)
             {
@@ -94,14 +107,14 @@ namespace OrganizerAPI.Controllers
         }
 
         // DELETE: user-tasks/{id}
-        [Route("{id:int}")]
-        [HttpDelete]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             try
             {
-                await service.DeleteById(id);
-                return Ok();
+                var authToken = Request.Cookies["refreshToken"];
+                await _userTaskService.DeleteById(id, _userService.GetCurrentUserId(authToken));
+                return NoContent();
             }
             catch (Exception)
             {

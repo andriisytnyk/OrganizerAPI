@@ -1,13 +1,9 @@
 ﻿using OrganizerAPI.Models.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrganizerAPI.Shared.ModelsDTO
 {
-    public class UserTaskDTO
+    public class UserTaskDto
     {
         public int Id { get; set; }
         public string Title { get; set; }
