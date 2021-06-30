@@ -4,7 +4,6 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-<<<<<<< HEAD
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,14 +17,6 @@ using OrganizerAPI.Infrastructure.Contexts;
 using OrganizerAPI.Infrastructure.Repositories;
 using OrganizerAPI.Shared;
 using OrganizerAPI.Shared.ModelsDTO;
-=======
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
->>>>>>> master
 
 namespace OrganizerAPI
 {
@@ -41,7 +32,6 @@ namespace OrganizerAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-<<<<<<< HEAD
             services.AddCors();
             //services.AddControllers().AddNewtonsoftJson(options =>
             //    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -89,9 +79,6 @@ namespace OrganizerAPI
             services.AddScoped<UserRepository>();
 
             services.AddTransient<IMapper, Mapper>();
-=======
-            services.AddControllers();
->>>>>>> master
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
