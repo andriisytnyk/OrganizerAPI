@@ -163,14 +163,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public UserAuthResponseDto Authenticate(UserAuthRequestDto model, string ipAddress)
+        public async Task<UserAuthResponseDto> Authenticate(UserAuthRequestDto model, string ipAddress)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
                     throw new InvalidAuthDataException("Username and password are required.");
 
-                var user = _context.Users.SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
+                var user = await _userRepository.GetUserByUsernameAndPassword(model.Username, model.Password);
 
                 if (user == null)
                     throw new InvalidAuthDataException("Username or password is incorrect.");
