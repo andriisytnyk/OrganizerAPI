@@ -32,20 +32,23 @@ namespace OrganizerAPI.Domain.Services
         private readonly UserRepository _userRepository;
         private readonly JwtSettings _jwtSettings;
         private readonly IMapper _mapper;
-        private readonly AbstractValidator<UserRequestDto> _validator;
+        private readonly AbstractValidator<UserDto> _userDtoValidator;
+        private readonly AbstractValidator<UserRequestDto> _userRequestDtoValidator;
 
         public UserService(
             OrganizerContext context,
             UserRepository userRepository,
             IOptions<JwtSettings> jwtSettings,
             IMapper mapper,
-            AbstractValidator<UserRequestDto> validator)
+            AbstractValidator<UserDto> userDtoValidator,
+            AbstractValidator<UserRequestDto> userRequestDtoValidator)
         {
             _context = context;
             _userRepository = userRepository;
             _jwtSettings = jwtSettings.Value;
             _mapper = mapper;
-            _validator = validator;
+            _userDtoValidator = userDtoValidator;
+            _userRequestDtoValidator = userRequestDtoValidator;
         }
 
         public async Task<List<UserDto>> GetAll(int? userId = null)
@@ -56,7 +59,6 @@ namespace OrganizerAPI.Domain.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -65,11 +67,13 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                return _mapper.MapUser(await _userRepository.GetById(id));
+                var user = await _userRepository.GetById(id);
+                if (user == null)
+                    throw new UserNotFoundException("User with such id was not found.");
+                return _mapper.MapUser(user);
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -83,7 +87,7 @@ namespace OrganizerAPI.Domain.Services
                 if ((await _userRepository.GetById(userId.Value)).Role != Role.Admin)
                     throw new Exception("User doesn't have sufficient rights to create new user.");
 
-                var validationResult = await _validator.ValidateAsync(entity as UserRequestDto);
+                var validationResult = await _userRequestDtoValidator.ValidateAsync(entity as UserRequestDto);
                 if (!validationResult.IsValid)
                     throw new ValidationException(validationResult.Errors);
 
@@ -91,7 +95,6 @@ namespace OrganizerAPI.Domain.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -105,7 +108,7 @@ namespace OrganizerAPI.Domain.Services
                 if (entity.Id != userId && (await _userRepository.GetById(userId.Value)).Role != Role.Admin)
                     throw new Exception("User doesn't have sufficient rights to receive the data.");
 
-                var validationResult = await _validator.ValidateAsync(entity as UserRequestDto);
+                var validationResult = await _userDtoValidator.ValidateAsync(entity);
                 if (!validationResult.IsValid)
                     throw new ValidationException(validationResult.Errors);
 
@@ -113,7 +116,6 @@ namespace OrganizerAPI.Domain.Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -142,7 +144,7 @@ namespace OrganizerAPI.Domain.Services
         {
             try
             {
-                var validationResult = await _validator.ValidateAsync(model);
+                var validationResult = await _userRequestDtoValidator.ValidateAsync(model);
                 if (!validationResult.IsValid)
                     throw new ValidationException(validationResult.Errors);
 

@@ -18,8 +18,8 @@ namespace OrganizerAPI.Controllers
 
         public UserTasksController(IUserTaskService userTaskService, IUserService userService)
         {
-            this._userTaskService = userTaskService;
-            this._userService = userService;
+            _userTaskService = userTaskService;
+            _userService = userService;
         }
 
         // GET: user-tasks

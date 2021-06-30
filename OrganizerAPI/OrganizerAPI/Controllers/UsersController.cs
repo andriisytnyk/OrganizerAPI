@@ -32,9 +32,9 @@ namespace OrganizerAPI.Controllers
             {
                 return Ok(await _userService.GetAll());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound();
+                return NotFound(new { ex.Message });
             }
         }
 
@@ -46,15 +46,19 @@ namespace OrganizerAPI.Controllers
             {
                 return Ok(await _userService.GetById(id));
             }
-            catch (Exception)
+            catch (UserNotFoundException ex)
             {
-                return NotFound();
+                return NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { ex.Message });
             }
         }
 
         // POST: users
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] UserDto user)
+        public async Task<IActionResult> Post([FromBody] UserRequestDto user)
         {
             try
             {
@@ -69,13 +73,15 @@ namespace OrganizerAPI.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                    return BadRequest(new { ex.InnerException.Message });
                 return BadRequest(new { ex.Message });
             }
         }
 
         // PUT: users
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] UserDto user)
+        public async Task<IActionResult> Put([FromBody] UserRequestDto user)
         {
             try
             {
@@ -87,13 +93,15 @@ namespace OrganizerAPI.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                    return BadRequest(new { ex.InnerException.Message });
                 return BadRequest(new { ex.Message });
             }
         }
 
         // DELETE: users
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromBody] UserDto user)
+        public async Task<IActionResult> Delete([FromBody] UserRequestDto user)
         {
             try
             {

@@ -1,19 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Domain.Mapping;
@@ -21,7 +15,6 @@ using OrganizerAPI.Domain.Services;
 using OrganizerAPI.Domain.Validators;
 using OrganizerAPI.Infrastructure.Contexts;
 using OrganizerAPI.Infrastructure.Repositories;
-using OrganizerAPI.Models.Models;
 using OrganizerAPI.Shared;
 using OrganizerAPI.Shared.ModelsDTO;
 
@@ -79,7 +72,8 @@ namespace OrganizerAPI
             services.AddScoped<IUserService, UserService>();
 
             services.AddTransient<AbstractValidator<UserTaskDto>, UserTaskValidator>();
-            services.AddTransient<AbstractValidator<UserRequestDto>, UserValidator>();
+            services.AddTransient<AbstractValidator<UserRequestDto>, UserRequestDtoValidator>();
+            services.AddTransient<AbstractValidator<UserDto>, UserDtoValidator>();
 
             services.AddScoped<UserTaskRepository>();
             services.AddScoped<UserRepository>();

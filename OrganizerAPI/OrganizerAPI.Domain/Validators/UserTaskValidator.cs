@@ -1,11 +1,5 @@
 ﻿using FluentValidation;
-using OrganizerAPI.Models.Common;
 using OrganizerAPI.Shared.ModelsDTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Validators
 {

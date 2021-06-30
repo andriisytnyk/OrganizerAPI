@@ -1,11 +1,7 @@
 ﻿using OrganizerAPI.Domain.Interfaces;
 using OrganizerAPI.Models.Models;
 using OrganizerAPI.Shared.ModelsDTO;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OrganizerAPI.Domain.Mapping
 {
@@ -49,6 +45,7 @@ namespace OrganizerAPI.Domain.Mapping
                 LastName = value.LastName,
                 Username = value.Username,
                 Email = value.Email,
+                Role = value.Role,
                 UserTasks = userTasks
             };
         }
@@ -67,6 +64,7 @@ namespace OrganizerAPI.Domain.Mapping
                 LastName = value.LastName,
                 Username = value.Username,
                 Email = value.Email,
+                Role = value.Role,
                 UserTasks = userTasks
             };
         }
@@ -84,11 +82,11 @@ namespace OrganizerAPI.Domain.Mapping
                 FirstName = value.FirstName,
                 LastName = value.LastName,
                 Username = value.Username,
-                Email = value.Email,
-                UserTasks = userTasks,
                 Password = value.Password,
-                UserRefreshTokens = value.UserRefreshTokens,
-                Role = value.Role
+                Email = value.Email,
+                Role = value.Role,
+                UserTasks = userTasks,
+                UserRefreshTokens = value.UserRefreshTokens
             };
         }
     }
