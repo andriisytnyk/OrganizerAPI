@@ -153,7 +153,7 @@ namespace OrganizerAPI.Domain.Services
                 
                 var user = await _userRepository.Create(_mapper.MapUser(model));
 
-                var tokens = GenerateAndSaveTokensPair(user, ipAddress);
+                var tokens = await GenerateAndSaveTokensPair (user, ipAddress);
 
                 return new UserAuthResponseDto(_mapper.MapUser(user), tokens.JwtToken, JwtTokenExpiresIn, tokens.RefreshToken.Token);
             }
@@ -175,7 +175,7 @@ namespace OrganizerAPI.Domain.Services
                 if (user == null)
                     throw new InvalidAuthDataException("Username or password is incorrect.");
 
-                var tokens = GenerateAndSaveTokensPair(user, ipAddress);
+                var tokens = await GenerateAndSaveTokensPair (user, ipAddress);
 
                 return new UserAuthResponseDto(_mapper.MapUser(user), tokens.JwtToken, JwtTokenExpiresIn, tokens.RefreshToken.Token);
             }
@@ -185,11 +185,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public UserAuthResponseDto UpdateRefreshToken(string token, string ipAddress)
+        public async Task<UserAuthResponseDto> UpdateRefreshToken(string token, string ipAddress)
         {
             try
             {
-                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token is required");
+
+                var user = await _userRepository.GetUserByRefreshToken(token);
 
                 // return exception if no user found with token
                 if (user == null)
@@ -201,7 +204,7 @@ namespace OrganizerAPI.Domain.Services
                 if (!refreshToken.IsActive)
                     throw new NotActiveTokenException("Token is not longer active.");
 
-                var tokens = GenerateAndSaveTokensPair(user, ipAddress);
+                var tokens = await GenerateAndSaveTokensPair(user, ipAddress);
 
                 return new UserAuthResponseDto(_mapper.MapUser(user), tokens.JwtToken, JwtTokenExpiresIn, tokens.RefreshToken.Token);
             }
@@ -211,14 +214,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public void RevokeToken(string token, string ipAddress)
+        public async Task RevokeToken(string token, string ipAddress)
         {
             try
             {
                 if (string.IsNullOrEmpty(token))
                     throw new Exception("Token is required");
 
-                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+                var user = await _userRepository.GetUserByRefreshToken(token);
 
                 // return exception if no user found with token
                 if (user == null)
@@ -233,8 +236,8 @@ namespace OrganizerAPI.Domain.Services
                 // revoke token and save
                 refreshToken.Revoked = DateTime.UtcNow;
                 refreshToken.RevokedByIp = ipAddress;
-                _context.Update(user);
-                _context.SaveChanges();
+
+                await _userRepository.Update(user);
             }
             catch (Exception)
             {
@@ -242,11 +245,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public UserDto GetCurrentUser(string token)
+        public async Task<UserDto> GetCurrentUser(string token)
         {
             try
             {
-                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token is required");
+
+                var user = await _userRepository.GetUserByRefreshToken(token);
 
                 if (user == null)
                     throw new UserNotFoundException("User with such token was not found.");
@@ -259,11 +265,14 @@ namespace OrganizerAPI.Domain.Services
             }
         }
 
-        public int GetCurrentUserId(string token)
+        public async Task<int> GetCurrentUserId(string token)
         {
             try
             {
-                var user = _context.Users.Include(u => u.UserRefreshTokens).SingleOrDefault(u => u.UserRefreshTokens.Any(rt => rt.Token == token));
+                if (string.IsNullOrEmpty(token))
+                    throw new Exception("Token is required");
+
+                var user = await _userRepository.GetUserByRefreshToken(token);
 
                 if (user == null)
                     throw new Exception("User with such token was not found.");
@@ -307,7 +316,7 @@ namespace OrganizerAPI.Domain.Services
             };
         }
 
-        private TokensPair GenerateAndSaveTokensPair(User user, string ipAddress)
+        private async Task<TokensPair> GenerateAndSaveTokensPair(User user, string ipAddress)
         {
             // generate jwt and refresh tokens
             var jwtToken = GenerateJwtToken(user);
@@ -325,8 +334,8 @@ namespace OrganizerAPI.Domain.Services
 
             // save refresh token
             user.UserRefreshTokens.Add(refreshToken);
-            _context.Update(user);
-            _context.SaveChanges();
+
+            await _userRepository.Update(user);
 
             return new TokensPair(jwtToken, refreshToken);
         }
