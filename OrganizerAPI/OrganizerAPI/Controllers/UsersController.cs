@@ -233,8 +233,8 @@ namespace OrganizerAPI.Controllers
             }
         }
 
-        // GET: users/current
-        [HttpGet("current")]
+        // GET: users/current-user
+        [HttpGet("current-user")]
         public async Task<IActionResult> GetCurrentUser()
         {
             try
