@@ -29,7 +29,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 var authToken = Request.Cookies["refreshToken"];
-                return Ok(await _userTaskService.GetAll(_userService.GetCurrentUserId(authToken)));
+                return Ok(await _userTaskService.GetAll(await _userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -44,7 +44,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 var authToken = Request.Cookies["refreshToken"];
-                return Ok(await _userTaskService.GetById(id, _userService.GetCurrentUserId(authToken)));
+                return Ok(await _userTaskService.GetById(id, await _userService.GetCurrentUserId(authToken)));
             }
             catch (Exception)
             {
@@ -63,7 +63,7 @@ namespace OrganizerAPI.Controllers
                     Request.GetDisplayUrl(), 
                     await _userTaskService.Create(
                         userTask, 
-                        _userService.GetCurrentUserId(authToken))
+                        await _userService.GetCurrentUserId(authToken))
                     );
             }
             catch (Exception)
@@ -81,7 +81,7 @@ namespace OrganizerAPI.Controllers
                 var authToken = Request.Cookies["refreshToken"];
                 await _userTaskService.Update(
                     userTask, 
-                    _userService.GetCurrentUserId(authToken));
+                    await _userService.GetCurrentUserId(authToken));
                 return Ok();
             }
             catch (Exception)
@@ -97,7 +97,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 var authToken = Request.Cookies["refreshToken"];
-                await _userTaskService.Delete(userTask, _userService.GetCurrentUserId(authToken));
+                await _userTaskService.Delete(userTask, await _userService.GetCurrentUserId(authToken));
                 return NoContent();
             }
             catch (Exception)
@@ -113,7 +113,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 var authToken = Request.Cookies["refreshToken"];
-                await _userTaskService.DeleteById(id, _userService.GetCurrentUserId(authToken));
+                await _userTaskService.DeleteById(id, await _userService.GetCurrentUserId(authToken));
                 return NoContent();
             }
             catch (Exception)

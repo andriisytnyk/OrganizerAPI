@@ -68,7 +68,7 @@ namespace OrganizerAPI.Controllers
                     Request.GetDisplayUrl(),
                     await _userService.Create(
                         user,
-                        _userService.GetCurrentUserId(authToken))
+                        await _userService.GetCurrentUserId(authToken))
                     );
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@ namespace OrganizerAPI.Controllers
                 var authToken = Request.Cookies["refreshToken"];
                 await _userService.Update(
                     user,
-                    _userService.GetCurrentUserId(authToken));
+                    await _userService.GetCurrentUserId(authToken));
                 return Ok();
             }
             catch (Exception ex)
@@ -106,7 +106,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 var authToken = Request.Cookies["refreshToken"];
-                await _userService.Delete(user, _userService.GetCurrentUserId(authToken));
+                await _userService.Delete(user, await _userService.GetCurrentUserId(authToken));
 
                 return NoContent();
             }
@@ -123,7 +123,7 @@ namespace OrganizerAPI.Controllers
             try
             {
                 var authToken = Request.Cookies["refreshToken"];
-                await _userService.DeleteById(id, _userService.GetCurrentUserId(authToken));
+                await _userService.DeleteById(id, await _userService.GetCurrentUserId(authToken));
 
                 return NoContent();
             }
@@ -158,11 +158,11 @@ namespace OrganizerAPI.Controllers
         // POST: users/authenticate
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserAuthRequestDto request)
+        public async Task<IActionResult> Authenticate([FromBody] UserAuthRequestDto request)
         {
             try
             {
-                var response = _userService.Authenticate(request, IpAddress());
+                var response = await _userService.Authenticate(request, IpAddress());
                 SetTokenCookie(response.RefreshToken);
 
                 return Ok(response);
@@ -180,12 +180,14 @@ namespace OrganizerAPI.Controllers
         // POST: users/refresh-token
         [AllowAnonymous]
         [HttpPost("refresh-token")]
-        public IActionResult RefreshToken()
+        public async Task<IActionResult> RefreshToken()
         {
             try
             {
                 var refreshToken = Request.Cookies["refreshToken"];
-                var response = _userService.UpdateRefreshToken(refreshToken, IpAddress());
+
+                var response = await _userService.UpdateRefreshToken(refreshToken, IpAddress());
+
                 SetTokenCookie(response.RefreshToken);
 
                 return Ok(response);
@@ -206,14 +208,14 @@ namespace OrganizerAPI.Controllers
 
         // POST: users/revoke-token
         [HttpPost("revoke-token")]
-        public IActionResult RevokeToken([FromBody] UserAuthRevokeTokenRequest request)
+        public async Task<IActionResult> RevokeToken([FromBody] UserAuthRevokeTokenRequest request)
         {
             try
             {
                 // accept token from request body or cookie
                 var token = request.Token ?? Request.Cookies["refreshToken"];
 
-                _userService.RevokeToken(token, IpAddress());
+                await _userService.RevokeToken(token, IpAddress());
 
                 return Ok(new { message = "Token revoked" });
             }
@@ -233,12 +235,12 @@ namespace OrganizerAPI.Controllers
 
         // GET: users/current
         [HttpGet("current")]
-        public IActionResult GetCurrentUser()
+        public async Task<IActionResult> GetCurrentUser()
         {
             try
             {
                 var refreshToken = Request.Cookies["refreshToken"];
-                var user = _userService.GetCurrentUser(refreshToken);
+                var user = await _userService.GetCurrentUser(refreshToken);
 
                 return Ok(user);
             }
